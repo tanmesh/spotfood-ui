@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.navbar {
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); 
+}
+
+.title {
+  margin-left: 1rem;
+  font-size: 2rem;
+}
+
+.profile {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileInfo {
+  margin-top: 2rem;
+}
+
+.navbarList {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
