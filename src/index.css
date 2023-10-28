@@ -36,3 +36,19 @@ body {
   margin-right: 1rem;
 }
 
+.card {
+  margin-bottom: 2rem;
+  width: 40%;
+}
+
+.cardDiv {
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+}
+
+.extra-small {
+  font-size: 10px; /* Customize the font size as needed */
+  padding: 4px 4px; /* Customize the padding as needed */
+  /* Add any other custom styles you want */
+}

@@ -1,38 +1,41 @@
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import Navbar from '../components/Navbar'
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import UserContext from '../context/user/UserContext';
-import React, { useContext, useState } from 'react'
+import React, { useState, useContext } from 'react'
 
-function SignUp() {
+function CreatePost() {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        nickName: '',
-        emailId: '',
-        password: '',
+        tags: [],
+        latitude: '',
+        longitude: '',
+        foodImage: '',
+        locationName: '',
     })
 
     const navigate = useNavigate()
+    const { accessToken } = useContext(UserContext)
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
+        console.log(formData)   
+
         const config = {
             headers: {
                 'Content-Type': 'application/json',
+                'x-access-token': accessToken,
             },
         };
 
-        axios.post('http://localhost:39114/user/signup', formData, config)
+        axios.post('http://localhost:39114/user_post/add', formData, config)
             .then((response) => {
                 console.log(response.data);
-                toast.success('Signup successful!')
-                navigate('/sign-in')
+                toast.success('Upload successful!')
+                navigate('/')
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -60,59 +63,54 @@ function SignUp() {
         <div>
             <Navbar />
             <main className='profile'>
-                <h3>SIGN UP</h3>
+                <h3>Create new post</h3>
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="firstName">
-                            <Form.Label>First Name</Form.Label>
+                        <Form.Group className="mb-3" controlId="locationName">
+                            <Form.Label>Restaurant name</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="your first name"
+                                placeholder="Enter restaurant name"
                                 onChange={onMutate}
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="lastName">
-                            <Form.Label>Last Name</Form.Label>
+                        {/* TODO: taking multiple tags  */}
+                        <Form.Group className="mb-3" controlId="tags">
+                            <Form.Label>Tags</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="your last name"
+                                placeholder="Enter tag"
                                 onChange={onMutate}
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="nickName">
-                            <Form.Label>Avatar name</Form.Label>
+                        <Form.Group className="mb-3" controlId="latitude">
+                            <Form.Label>Latitude</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="your avatar name"
+                                placeholder="Enter latitude"
                                 onChange={onMutate}
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="emailId">
-                            <Form.Label>Email address</Form.Label>
+                        <Form.Group className="mb-3" controlId="longitude">
+                            <Form.Label>Longitude</Form.Label>
                             <Form.Control
-                                type="email"
-                                placeholder="your emailId"
+                                type="text"
+                                placeholder="Enter longitude"
                                 onChange={onMutate}
                             />
-                            <Form.Text className="text-muted">
-                                We'll never share your email with anyone else.
-                            </Form.Text>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="password">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="text" // TODO: type="password"
-                                placeholder="your password"
-                                onChange={onMutate}
-                            />
+                        {/* TODO: upload from camera */}
+                        <Form.Group controlId="foodImage" className="mb-3">
+                            <Form.Label>Upload </Form.Label>
+                            <Form.Control type="file" accept='.jpg,.png,.jpeg' />
                         </Form.Group>
 
                         <div className="d-flex justify-content-center">
-                            <Button variant="btn btn-outline-danger" type="submit">
+                            <Button variant="btn btn-outline-dark" type="submit">
                                 Submit
                             </Button>
                         </div>
@@ -123,4 +121,4 @@ function SignUp() {
     )
 }
 
-export default SignUp
+export default CreatePost

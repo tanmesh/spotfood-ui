@@ -1,17 +1,18 @@
 import axios from 'axios'
 import React, { useEffect, useState, useContext } from 'react'
 import Navbar from '../components/Navbar'
+import Badge from 'react-bootstrap/Badge';
+import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserContext from '../context/user/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Profile() {
     const { accessToken, setAccesstoken } = useContext(UserContext)
 
-    const [profile, setProfile] = React.useState({
+    const [profile, setProfile] = useState({
         emailId: '',
         firstName: '',
         lastName: '',
@@ -44,6 +45,7 @@ function Profile() {
             axios.get('http://localhost:39114/user/profile', config)
                 .then((response) => {
                     setProfile(response.data)
+                    console.log(response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -61,9 +63,7 @@ function Profile() {
             emailId,
             password,
         };
-        console.log(userData);
     };
-
 
     /*  
         TODO: Not working 
@@ -96,17 +96,24 @@ function Profile() {
         <div>
             <Navbar />
             <main className='profile'>
-                <div>
-                    {/* TODO: add edit option itself on the img */}
-                    <img src={profilePicUrl} alt="avatar" style={{
-                        width: "100px",
-                        borderRadius: "50%",
-                    }} />
+                {/* TODO: add edit option itself on the img */}
+                <img src={profilePicUrl} alt="avatar" style={{
+                    width: "100px",
+                    borderRadius: "50%",
+                }} />
 
+                {/* TOOD:  add cross to remove tags  */}
+                <div className='ml-2 mr-1 mt-2'>
+                    <Stack direction="horizontal" gap={2} className='cardDiv'>
+                        {profile.followTagList.map((tag) => (
+                            <Badge bg="primary">{tag}</Badge>
+                        ))}
+                    </Stack>
                 </div>
+
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="formBasicFirstName">
+                        <Form.Group className="mb-3" controlId="firstName">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control
                                 type="text"
@@ -116,7 +123,7 @@ function Profile() {
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicLastName">
+                        <Form.Group className="mb-3" controlId="lastName">
                             <Form.Label>Last Name</Form.Label>
                             <Form.Control
                                 type="text"
@@ -126,7 +133,7 @@ function Profile() {
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Group className="mb-3" controlId="emailId">
                             <Form.Label>Email address</Form.Label>
                             <Form.Control
                                 type="email"
@@ -139,7 +146,7 @@ function Profile() {
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Group className="mb-3" controlId="password">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="text" // TODO: type="password"
@@ -149,7 +156,20 @@ function Profile() {
                             />
                         </Form.Group>
 
-                        <Form.Group controlId="formFile" className="mb-3">
+                        {/*
+                        TODO: 
+                            1. add tags options
+                        */}
+                        <Form.Group className="mb-3" controlId="tags">
+                            <Form.Label>Tags </Form.Label>
+                            <Stack direction="horizontal" gap={2} className='cardDiv'>
+                                {profile.followTagList.map((tag) => (
+                                    <Badge bg="primary">{tag}</Badge>
+                                ))}
+                            </Stack>
+                        </Form.Group>
+
+                        <Form.Group controlId="avatar" className="mb-3">
                             <Form.Label>Upload new avatar</Form.Label>
                             <Form.Control type="file" />
                         </Form.Group>

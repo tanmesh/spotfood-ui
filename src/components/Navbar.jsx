@@ -8,13 +8,21 @@ function Navbar() {
     const navigate = useNavigate()
 
     return (
-        <div className='navbar'>
-            <div className='title' onClick={() => navigate('/')}> Spotfood </div>
+        <div className='navbar mb-3'>
+            <div className='title' onClick={() => navigate('/')}> <a>Spotfood</a> </div>
             <ul className='navbarList'>
                 <li>
                     <ButtonGroup>
                         <Button onClick={() => navigate('/')} variant="btn btn-outline-dark">
                             Home
+                        </Button>
+                    </ButtonGroup>
+                </li>
+
+                <li>
+                    <ButtonGroup>
+                        <Button onClick={() => navigate('/add-post')} variant="btn btn-outline-dark">
+                            Add new post
                         </Button>
                     </ButtonGroup>
                 </li>

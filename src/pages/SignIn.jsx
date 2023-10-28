@@ -1,20 +1,19 @@
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserContext from '../context/user/UserContext';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
 
 function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [token, setToken] = useState('');
     const navigate = useNavigate()
 
-    const { accessToken, setAccesstoken } = useContext(UserContext)
+    const { setAccesstoken } = useContext(UserContext)
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -85,6 +84,12 @@ function SignIn() {
                             </Button>
                         </div>
                     </Form>
+                </div>
+
+                <div className="d-flex mt-3 justify-content-center">
+                    <Button variant="outline-primary" type="submit" onClick={() => navigate('/sign-up')}>
+                        Sign up
+                    </Button>
                 </div>
             </main>
         </div>
