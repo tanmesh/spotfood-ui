@@ -4,25 +4,45 @@ import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import UserContext from '../context/user/UserContext';
-import React, { useState, useContext } from 'react'
+import AuthContext from '../context/auth/AuthContext';
+import { TagsInput } from "react-tag-input-component";
+import React, { useState, useContext, useEffect } from 'react'
 
 function CreatePost() {
+    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+
     const [formData, setFormData] = useState({
         tags: [],
         latitude: '',
         longitude: '',
-        foodImage: '',
+        encodedImgString: '',
         locationName: '',
     })
 
+    const [selectedTags, setSelectedTags] = useState([]);
+
     const navigate = useNavigate()
-    const { accessToken } = useContext(UserContext)
+
+    useEffect(() => {
+        setAccessToken(getAccessTokenFromContext())
+
+        console.log('accessToken: ', accessToken)
+
+        if (accessToken === null) {
+            console.log('accessToken is null')
+            navigate('/sign-in')
+            return;
+        }
+    }, [getAccessTokenFromContext()])
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        console.log(formData)   
+        formData.tags = selectedTags
+
+        console.log('Access token: ', accessToken)
+        console.log('Formdata: ', formData)
 
         const config = {
             headers: {
@@ -51,12 +71,33 @@ function CreatePost() {
             });
     }
 
-    const onMutate = (e) => {
-        e.preventDefault()
-        setFormData((prevState) => ({
-            ...prevState,
-            [e.target.id]: e.target.value,
-        }))
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const onMutate = async (e) => {
+        console.log('Mutate: ', e)
+
+        // Files
+        if (e.target.files) {
+            const base64Data = await convertFileToBase64(e.target.files[0])
+
+            setFormData((prevState) => ({
+                ...prevState,
+                encodedImgString: base64Data,
+            }))
+        } else {
+            setFormData((prevState) => ({
+                ...prevState,
+                [e.target.id]: e.target.value,
+            }))
+        }
     }
 
     return (
@@ -75,13 +116,13 @@ function CreatePost() {
                             />
                         </Form.Group>
 
-                        {/* TODO: taking multiple tags  */}
                         <Form.Group className="mb-3" controlId="tags">
                             <Form.Label>Tags</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter tag"
-                                onChange={onMutate}
+                            <TagsInput
+                                value={selectedTags}
+                                onChange={setSelectedTags}
+                                name="tags"
+                                placeHolder="Enter tag"
                             />
                         </Form.Group>
 
@@ -104,9 +145,12 @@ function CreatePost() {
                         </Form.Group>
 
                         {/* TODO: upload from camera */}
-                        <Form.Group controlId="foodImage" className="mb-3">
+                        <Form.Group controlId="encodedImgString" className="mb-3">
                             <Form.Label>Upload </Form.Label>
-                            <Form.Control type="file" accept='.jpg,.png,.jpeg' />
+                            <Form.Control
+                                type="file"
+                                accept='.jpg,.png,.jpeg'
+                                onChange={onMutate} />
                         </Form.Group>
 
                         <div className="d-flex justify-content-center">

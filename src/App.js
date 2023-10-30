@@ -1,7 +1,7 @@
 import Home from "./pages/Home.jsx";
 import Profile from "./pages/Profile.jsx";
 import About from "./pages/About.jsx";
-import { UserProvider } from "./context/user/UserContext.jsx";
+import { AuthProvider } from "./context/auth/AuthContext.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import { ToastContainer } from 'react-toastify';
 import SignIn from "./pages/SignIn.jsx";
@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <UserProvider>
+    <AuthProvider>
       <Router>
         <div>
           <main className="">
@@ -29,7 +29,7 @@ function App() {
         </div>
       </Router>
       <ToastContainer />
-    </UserProvider>
+    </AuthProvider>
   );
 }
 

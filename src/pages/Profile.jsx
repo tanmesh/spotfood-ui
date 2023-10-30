@@ -5,12 +5,13 @@ import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import UserContext from '../context/user/UserContext';
+import AuthContext from '../context/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function Profile() {
-    const { accessToken, setAccesstoken } = useContext(UserContext)
+    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
 
     const [profile, setProfile] = useState({
         emailId: '',
@@ -34,6 +35,16 @@ function Profile() {
     const navigate = useNavigate()
 
     useEffect(() => {
+        setAccessToken(getAccessTokenFromContext())
+
+        console.log('accessToken: ', accessToken)
+
+        if (accessToken === null) {
+            console.log('accessToken is null')
+            navigate('/sign-in')
+            return;
+        }
+
         const fetchProfile = async () => {
             const config = {
                 headers: {
@@ -53,16 +64,16 @@ function Profile() {
                 });
         }
         fetchProfile()
-    }, [])
+    }, [navigate, getAccessTokenFromContext()])
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const userData = {
-            firstName,
-            lastName,
-            emailId,
-            password,
-        };
+        // const userData = {
+        //     firstName,
+        //     lastName,
+        //     emailId,
+        //     password,
+        // };
     };
 
     /*  
@@ -82,7 +93,7 @@ function Profile() {
         axios.post('http://localhost:39114/user/logout', '', config)
             .then((response) => {
                 console.log(response.data);
-                setAccesstoken(null)
+                setAccessTokenFromContext(null)
                 toast.success('Logout successful!')
                 navigate('/')
             })

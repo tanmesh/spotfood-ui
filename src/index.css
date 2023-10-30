@@ -45,6 +45,7 @@ body {
   display: flex;
   justify-content: center !important;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 .extra-small {

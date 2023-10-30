@@ -5,8 +5,7 @@ import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import UserContext from '../context/user/UserContext';
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 
 function SignUp() {
     const [formData, setFormData] = useState({

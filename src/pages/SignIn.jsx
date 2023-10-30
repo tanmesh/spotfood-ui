@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import UserContext from '../context/user/UserContext';
+import AuthContext from '../context/auth/AuthContext'
 import 'react-toastify/dist/ReactToastify.css';
 
 function SignIn() {
@@ -13,7 +13,8 @@ function SignIn() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
 
-    const { setAccesstoken } = useContext(UserContext)
+    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext)
+    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -32,7 +33,8 @@ function SignIn() {
         axios.post('http://localhost:39114/user/login', userData, config)
             .then((response) => {
                 console.log(response.data);
-                setAccesstoken(response.data.accessToken)
+                setAccessTokenFromContext(response.data.accessToken)
+                setAccessToken(response.data.accessToken)
                 toast.success('Login successful!')
                 navigate('/')
             })

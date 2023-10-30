@@ -1,21 +1,21 @@
-import { createContext, useState } from "react";
+// import { createContext, useState } from "react";
 
-const UserContext = createContext()
+// const UserContext = createContext()
 
-export const UserProvider = ({ children }) => {
-    const [accessToken, setAccessToken] = useState(null)
+// export const UserProvider = ({ children }) => {
+//     const [accessToken, setAccessToken] = useState(null)
 
-    const setAccesstoken = (token) => {
-        setAccessToken(token)
-    }
+//     const setAccesstoken = (token) => {
+//         setAccessToken(token)
+//     }
 
-    return <UserContext.Provider
-        value={{
-            accessToken,
-            setAccesstoken,
-        }}>
-        {children}
-    </UserContext.Provider>
-}
+//     return <UserContext.Provider
+//         value={{
+//             accessToken,
+//             setAccesstoken,
+//         }}>
+//         {children}
+//     </UserContext.Provider>
+// }
 
-export default UserContext
+// export default UserContext

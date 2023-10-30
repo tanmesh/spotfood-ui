@@ -1,17 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react'
-import UserContext from '../context/user/UserContext'
+import AuthContext from '../context/auth/AuthContext'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import FeedItem from '../components/FeedItem'
+import { toast } from 'react-toastify'
 
 function Home() {
-    const { accessToken } = useContext(UserContext)
-    const [userposts, setUserposts] = useState([])
+    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
 
+    const [userposts, setUserposts] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
+        setAccessToken(getAccessTokenFromContext())
+
+        console.log('accessToken: ', accessToken)
+
+        if (accessToken === null) {
+            console.log('accessToken is null')
+            navigate('/sign-in')
+            return;
+        }
+
         const fetchProfile = async () => {
             const config = {
                 headers: {
@@ -27,12 +39,12 @@ function Home() {
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    navigate('/sign-in')
+                    toast.error('An unexpected error occurred. Please try again.');
                 });
         }
 
         fetchProfile()
-    }, [])
+    }, [getAccessTokenFromContext(), navigate])
 
     return (
         <div>
