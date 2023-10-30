@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import FeedItem from '../components/FeedItem'
 import { toast } from 'react-toastify'
 
+// TODO: (backend) sort feed based on time 
 function Home() {
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
@@ -34,7 +35,6 @@ function Home() {
 
             axios.get(`http://localhost:39114/user_post/feeds`, config)
                 .then((response) => {
-                    console.log(response.data)
                     setUserposts(response.data)
                 })
                 .catch((error) => {

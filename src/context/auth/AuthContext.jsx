@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
 
     const setAccessTokenFromContext = (token) => {
         setAccessToken(token)
-        sessionStorage.setItem('accessToken', token);
+        sessionStorage.setItem('accessToken', token, 10*100);
     }
 
     const getAccessTokenFromContext = () => {

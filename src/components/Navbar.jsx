@@ -8,12 +8,12 @@ function Navbar() {
     const navigate = useNavigate()
 
     return (
-        <div className='navbar mb-3'>
+        <div className='navbar mb-3 '>
             <div className='title' onClick={() => navigate('/')}> <a>Spotfood</a> </div>
             <ul className='navbarList'>
                 <li>
                     <ButtonGroup>
-                        <Button onClick={() => navigate('/')} variant="btn btn-outline-dark">
+                        <Button onClick={() => navigate('/')} variant="btn btn-outline-dark btn-sm">
                             Home
                         </Button>
                     </ButtonGroup>
@@ -21,7 +21,7 @@ function Navbar() {
 
                 <li>
                     <ButtonGroup>
-                        <Button onClick={() => navigate('/add-post')} variant="btn btn-outline-dark">
+                        <Button onClick={() => navigate('/add-post')} variant="btn btn-outline-dark btn-sm">
                             Add new post
                         </Button>
                     </ButtonGroup>
@@ -29,7 +29,7 @@ function Navbar() {
 
                 <li>
                     <ButtonGroup>
-                        <Button onClick={() => navigate('/about')} variant="btn btn-outline-dark">
+                        <Button onClick={() => navigate('/about')} variant="btn btn-outline-dark btn-sm">
                             About
                         </Button>
                     </ButtonGroup>
