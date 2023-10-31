@@ -9,10 +9,20 @@ import AuthContext from '../context/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+// TODO: set loading 
+
 function Profile() {
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
-
+    // eslint-disable-next-line
+    const [firstName, setFirstName] = useState('');
+    // eslint-disable-next-line
+    const [lastName, setLastName] = useState('');
+    // eslint-disable-next-line
+    const [emailId, setEmail] = useState('');
+    // eslint-disable-next-line
+    const [password, setPassword] = useState('');
+    const profilePicUrl = 'https://sm.ign.com/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.jpg'
     const [profile, setProfile] = useState({
         emailId: '',
         firstName: '',
@@ -23,15 +33,6 @@ function Profile() {
         lastUpdatedLocation: '',
         password: '',
     })
-
-    // TODO: set loading 
-
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [emailId, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const profilePicUrl = 'https://sm.ign.com/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.jpg'
-
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -64,7 +65,7 @@ function Profile() {
                 });
         }
         fetchProfile()
-    }, [navigate, getAccessTokenFromContext()])
+    }, [navigate, getAccessTokenFromContext, accessToken])
 
     const handleSubmit = (e) => {
         e.preventDefault();

@@ -117,6 +117,12 @@ function SignUp() {
                         </div>
                     </Form>
                 </div>
+
+                <div className="d-flex mt-3 justify-content-center">
+                    <Button variant="outline-primary" type="submit" onClick={() => navigate('/sign-in')}>
+                        Go back
+                    </Button>
+                </div>
             </main>
         </div>
     )

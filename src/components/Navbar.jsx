@@ -9,7 +9,7 @@ function Navbar() {
 
     return (
         <div className='navbar mb-3 '>
-            <div className='title' onClick={() => navigate('/')}> <a>Spotfood</a> </div>
+            <div className='title' onClick={() => navigate('/')}> Spotfood </div>
             <ul className='navbarList'>
                 <li>
                     <ButtonGroup>

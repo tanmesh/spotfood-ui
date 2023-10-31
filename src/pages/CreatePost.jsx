@@ -56,7 +56,8 @@ function CreatePost() {
     // Upload to S3 bucket
     const uploadFile = async (imgFile) => {
         const S3_BUCKET = "spotfood-images";
-        const key = 'byng' + '.jpeg'; // The key or filename for your object in S3
+        const fileType = '.jpeg';
+        const key = 'byng' + fileType; // The key or filename for your object in S3
 
         // console.log(`${process.env.REACT_APP_AWS_ACCESS_KEY}`)
         // console.log(`${process.env.REACT_APP_AWS_SECRET_KEY}`)
@@ -94,57 +95,6 @@ function CreatePost() {
             console.error("Error uploading file:", err);
         }
     };
-
-    // // Handle geolocations
-    // const handleGeolocation = async () => {
-    //     let geolocation = {
-    //         latitude: '',
-    //         longitude: '',
-    //     }
-
-    //     if (!geolocationEnabled) {
-    //         // using address
-    //         const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.trim()}'&key=${process.env.REACT_APP_GEOCODE_API_KEY}`)
-    //         const data = await response.json()
-
-    //         let address_ = data.status === 'ZERO_RESULTS' ? 'undefined' : data.results[0]?.formatted_address
-
-    //         if (address_ === 'undefined' || address_.includes('undefined')) {
-    //             toast.error('Please enter correct address!')
-    //             return;
-    //         }
-
-    //         console.log('response: ', response)
-    //         console.log('response,json(): ', data)
-
-    //         geolocation.latitude = data.results[0]?.geometry.location.lat ?? 0
-    //         geolocation.longitude = data.results[0]?.geometry.location.lng ?? 0
-
-    //         setAddress(address_)
-    //     } else {
-    //         // using current location
-    //         const options = {
-    //             enableHighAccuracy: true,
-    //             timeout: 10000,
-    //         };
-    //         const position = await new Promise((resolve, reject) => {
-    //             navigator.geolocation.getCurrentPosition(
-    //                 (position) => {
-    //                     resolve(position.coords);
-    //                 },
-    //                 (error) => {
-    //                     reject(error);
-    //                 },
-    //                 options
-    //             );
-    //         });
-
-    //         geolocation.longitude = position.longitude
-    //         geolocation.latitude = position.latitude
-    //     }
-
-    //     return geolocation
-    // }
 
     // Handle geolocations
     const handleGeolocation = async () => {

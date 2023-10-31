@@ -12,8 +12,8 @@ function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
-
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext)
+    // eslint-disable-next-line
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
 
     const handleSubmit = (e) => {
