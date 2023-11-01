@@ -9,6 +9,11 @@ import AuthContext from '../context/auth/AuthContext';
 import AWS from 'aws-sdk';
 import React, { useState, useContext, useEffect } from 'react'
 
+/*
+    TODO:
+    1. set loading 
+*/
+
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(AuthContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
@@ -57,11 +62,8 @@ function CreatePost() {
     const uploadFile = async (imgFile) => {
         const S3_BUCKET = "spotfood-images";
         const fileType = '.jpeg';
-        const key = 'byng' + fileType; // The key or filename for your object in S3
+        const key = imgFile.name + fileType; // The key or filename for your object in S3
 
-        // console.log(`${process.env.REACT_APP_AWS_ACCESS_KEY}`)
-        // console.log(`${process.env.REACT_APP_AWS_SECRET_KEY}`)
-        // console.log(`${process.env.REACT_APP_AWS_REGION}`)
         AWS.config.update({
             accessKeyId: `${process.env.REACT_APP_AWS_ACCESS_KEY}`,
             secretAccessKey: `${process.env.REACT_APP_AWS_SECRET_KEY}`,

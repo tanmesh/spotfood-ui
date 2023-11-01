@@ -1,3 +1,6 @@
+import { useNavigate } from 'react-router-dom';
+import { Pencil, X, Plus } from 'react-bootstrap-icons';
+import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
 import React, { useEffect, useState, useContext } from 'react'
 import Navbar from '../components/Navbar'
@@ -6,12 +9,11 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import AuthContext from '../context/auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 // TODO: set loading 
 
 function Profile() {
+    // eslint-disable-next-line
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
     // eslint-disable-next-line
@@ -33,6 +35,8 @@ function Profile() {
         lastUpdatedLocation: '',
         password: '',
     })
+    const [addTagInput, setAddTagInput] = useState(false)
+    const [selectedTags, setSelectedTags] = useState([]);
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -57,7 +61,6 @@ function Profile() {
             axios.get('http://localhost:39114/user/profile', config)
                 .then((response) => {
                     setProfile(response.data)
-                    console.log(response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -67,41 +70,25 @@ function Profile() {
         fetchProfile()
     }, [navigate, getAccessTokenFromContext, accessToken])
 
+    const handleRemoveTag = (removeTag) => {
+        setProfile(prevProfile => ({
+            ...prevProfile,
+            followTagList: prevProfile.followTagList.filter(tag => tag !== removeTag)
+        }));
+    }
+
+    const handleAddTag = () => {
+        setProfile(prevProfile => ({
+            ...prevProfile,
+            followTagList: prevProfile.followTagList.concat(selectedTags)
+        }))
+    }
+
+    // TODO: handle submit
     const handleSubmit = (e) => {
         e.preventDefault();
-        // const userData = {
-        //     firstName,
-        //     lastName,
-        //     emailId,
-        //     password,
-        // };
-    };
 
-    /*  
-        TODO: Not working 
-    */
-    // Handling logout 
-    const handleLogout = (e) => {
-        console.log(accessToken);
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': accessToken,
-            },
-        };
-
-        axios.post('http://localhost:39114/user/logout', '', config)
-            .then((response) => {
-                console.log(response.data);
-                setAccessTokenFromContext(null)
-                toast.success('Logout successful!')
-                navigate('/')
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                toast.error('An unexpected error occurred. Please try again.');
-            });
+        handleAddTag()
     };
 
     return (
@@ -113,15 +100,14 @@ function Profile() {
                     width: "100px",
                     borderRadius: "50%",
                 }} />
-
-                {/* TOOD:  add cross to remove tags  */}
-                <div className='ml-2 mr-1 mt-2'>
+             
+                {/* <div className='ml-2 mr-1 mt-2'>
                     <Stack direction="horizontal" gap={2} className='cardDiv'>
                         {profile.followTagList.map((tag) => (
                             <Badge bg="primary">{tag}</Badge>
                         ))}
                     </Stack>
-                </div>
+                </div> */}
 
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
@@ -168,18 +154,53 @@ function Profile() {
                             />
                         </Form.Group>
 
-                        {/*
-                        TODO: 
-                            1. add tags options
-                        */}
                         <Form.Group className="mb-3" controlId="tags">
                             <Form.Label>Tags </Form.Label>
                             <Stack direction="horizontal" gap={2} className='cardDiv'>
                                 {profile.followTagList.map((tag) => (
-                                    <Badge bg="primary">{tag}</Badge>
+                                    <Badge bg="primary">
+                                        #{tag}
+                                        <X
+                                            onClick={() => { handleRemoveTag(tag) }}
+                                            style={{
+                                                cursor: 'pointer',
+                                                transition: 'transform 0.3s', // Add transition for the icon
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
+                                            }} />
+                                    </Badge>
                                 ))}
+                                <Badge bg="primary">
+                                    {<Plus
+                                        onClick={() => { setAddTagInput(true) }} // TODO: add tag
+                                        style={{
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.3s', // Add transition for the icon
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
+                                        }} />}
+                                </Badge>
                             </Stack>
                         </Form.Group>
+
+                        {addTagInput &&
+                            <Form.Group className="mb-3" controlId="tags">
+                                <TagsInput
+                                    value={selectedTags}
+                                    onChange={setSelectedTags}
+                                    name="tags"
+                                    placeHolder="Enter tag"
+                                />
+                            </Form.Group>
+                        }
 
                         <Form.Group controlId="avatar" className="mb-3">
                             <Form.Label>Upload new avatar</Form.Label>
@@ -192,12 +213,6 @@ function Profile() {
                             </Button>
                         </div>
                     </Form>
-                </div>
-
-                <div className="d-flex mt-3 justify-content-center">
-                    <Button variant="btn btn btn-danger" type="submit" onClick={() => handleLogout()}>
-                        Log out
-                    </Button>
                 </div>
             </main>
         </div>

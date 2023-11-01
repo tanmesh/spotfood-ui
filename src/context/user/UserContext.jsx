@@ -1,18 +1,38 @@
-// import { createContext, useState } from "react";
+// import { createContext, useState, useContext } from "react";
+// import axios from 'axios'
+// import AuthContext from '../auth/AuthContext';
+// import React from 'react'
 
 // const UserContext = createContext()
 
 // export const UserProvider = ({ children }) => {
-//     const [accessToken, setAccessToken] = useState(null)
+//     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+//     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
+//     const [profile, setProfile] = useState({})
 
-//     const setAccesstoken = (token) => {
-//         setAccessToken(token)
+//     const getProfileFromContext = () => {
+//         const config = {
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'x-access-token': accessToken,
+//             },
+//         };
+
+//         axios.get(`http://localhost:39114/user/profile`, config)
+//             .then((response) => {
+//                 console.log(response.data);
+//             })
+//             .catch((error) => {
+//                 console.error("Error:", error);
+//             });
+
+//         setProfile(profile)
+//         return profile
 //     }
 
 //     return <UserContext.Provider
 //         value={{
-//             accessToken,
-//             setAccesstoken,
+//             getProfileFromContext,
 //         }}>
 //         {children}
 //     </UserContext.Provider>

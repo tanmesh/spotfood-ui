@@ -5,7 +5,7 @@ function About() {
   return (
     <div>
       <Navbar />
-      <div className="mx-3">
+      <div className="mx-3" style={{marginTop: "7rem"}}>
         <h2>About page</h2>
       </div>
     </div>
