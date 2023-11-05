@@ -8,6 +8,10 @@ import Button from 'react-bootstrap/Button';
 import Spinner from '../shared/Loading'
 import React, { useContext, useEffect, useState } from 'react'
 
+/*
+    TODO:
+    1. fetch user posts when its not signed-in
+*/
 function Home() {
     // eslint-disable-next-line
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
@@ -21,6 +25,7 @@ function Home() {
         setIsLoading(true)
         setAccessToken(getAccessTokenFromContext())
 
+        console.log('accessToken: ', accessToken)
         if (accessToken === 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
@@ -37,12 +42,17 @@ function Home() {
 
             axios.get(`http://localhost:39114/user_post/feeds/${lastFetched}`, config)
                 .then((response) => {
+                    console.log('response.data: ', response.data)
                     setLastFetched(lastFetched + 2)
                     setUserposts(response.data)
                     setIsLoading(false)
                 })
                 .catch((error) => {
+                    setIsLoading(false)
                     console.error("Error:", error);
+                    if(userposts.length === 0) {
+                        return;
+                    }
                     toast.error('An unexpected error occurred. Please try again.');
                 });
         }
@@ -91,11 +101,20 @@ function Home() {
                     </ul>
                 </main>
             </div>
-            <div className="d-flex mt-3 justify-content-center">
-                <Button variant="btn btn btn-outline-dark" type="submit" onClick={handleLoadMore}>
-                    Load more
-                </Button>
-            </div>
+
+            {userposts.length !== 0
+                ? (
+                    <div className="d-flex mt-3 justify-content-center">
+                        <Button variant="btn btn btn-outline-dark" type="submit" onClick={handleLoadMore}>
+                            Load more
+                        </Button>
+                    </div>
+                )
+                : (
+                    <div>
+                        Do user post to show 🥺
+                    </div>
+                )}
         </div>
     )
 }

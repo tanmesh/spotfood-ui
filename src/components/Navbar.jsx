@@ -42,7 +42,7 @@ function Navbar() {
     };
 
     return (
-        <div className='navbar mb-3 fixed-top'>
+        <div className='navbar mb-3 fixed-top background-color='>
             <div className='title' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> Spotfood </div>
             <ul className='navbarList p-0 mb-0'>
                 <li>

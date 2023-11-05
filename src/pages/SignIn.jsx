@@ -27,7 +27,7 @@ function SignIn() {
 
         const userData = {
             emailId,
-            password,
+            password
         };
 
         axios.post('http://localhost:39114/user/login', userData, config)

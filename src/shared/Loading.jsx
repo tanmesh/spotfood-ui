@@ -1,4 +1,3 @@
-import spinner from '../assets/spinner.gif'
 import React from 'react'
 
 /*
@@ -7,15 +6,9 @@ import React from 'react'
 */
 function Loading() {
     return (
-        <img
-            src={spinner}
-            alt="Loading..."
-            style={{
-                width: "50%",
-                display: "block",
-                
-            }}
-        />
+        <div className="loadingSpinnerContainer">
+            <div className="loadingSpinner"></div>
+        </div>
     )
 }
 

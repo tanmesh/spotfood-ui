@@ -8,11 +8,7 @@ import Button from 'react-bootstrap/Button';
 import AuthContext from '../context/auth/AuthContext';
 import AWS from 'aws-sdk';
 import React, { useState, useContext, useEffect } from 'react'
-
-/*
-    TODO:
-    1. set loading 
-*/
+import Loading from '../shared/Loading';
 
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(AuthContext);
@@ -21,10 +17,11 @@ function CreatePost() {
     const [address, setAddress] = useState('')
     const [imgFile, setImgFile] = useState(null)
     const [selectedTags, setSelectedTags] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
-        tags: [],
+        tagList: [],
         latitude: '',
         longitude: '',
         imgUrl: '',
@@ -34,6 +31,7 @@ function CreatePost() {
     useEffect(() => {
         setAccessToken(getAccessTokenFromContext())
 
+        setLoading(true)
         if (accessToken === null) {
             console.log('accessToken is null')
             navigate('/sign-in')
@@ -53,9 +51,12 @@ function CreatePost() {
             },
             (error) => {
                 setGeolocationEnabled(false)
+
             },
             options
         );
+
+        setLoading(false)
     }, [accessToken, navigate, getAccessTokenFromContext])
 
     // Upload to S3 bucket
@@ -117,8 +118,6 @@ function CreatePost() {
                 return;
             }
 
-            console.log('response,json(): ', data)
-
             geolocation.latitude = data.results[0]?.geometry.location.lat ?? 0
             geolocation.longitude = data.results[0]?.geometry.location.lng ?? 0
 
@@ -152,25 +151,19 @@ function CreatePost() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        setLoading(true)
+
         const geolocation_ = (await Promise.all([handleGeolocation()]))[0]
         const imgUrl = (await Promise.all([uploadFile(imgFile)]))[0]
 
         console.log('geolocation_: ', geolocation_)
         console.log('imgUrl: ', imgUrl)
 
-        setFormData((prevState) => ({
-            ...prevState,
-            latitude: geolocation_.latitude,
-            longitude: geolocation_.longitude,
-            tags: selectedTags,
-            imgUrl: imgUrl,
-        }))
-
         const formDataCopy = {
             ...formData,
             latitude: geolocation_.latitude,
             longitude: geolocation_.longitude,
-            tags: selectedTags,
+            tagList: selectedTags,
             imgUrl,
         }
 
@@ -202,6 +195,8 @@ function CreatePost() {
                     toast.error('An unexpected error occurred. Please try again.');
                 }
             });
+
+        setLoading(false)
     }
 
     const onMutate = async (e) => {
@@ -219,6 +214,8 @@ function CreatePost() {
         <div>
             <Navbar />
             <main className='profile'>
+                {loading && <Loading />}
+
                 <h3>Create new post</h3>
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
@@ -228,6 +225,7 @@ function CreatePost() {
                                 type="text"
                                 placeholder="Enter restaurant name"
                                 onChange={onMutate}
+                                required
                             />
                         </Form.Group>
 
@@ -238,6 +236,7 @@ function CreatePost() {
                                 onChange={setSelectedTags}
                                 name="tags"
                                 placeHolder="Enter tag"
+                                required
                             />
                         </Form.Group>
 
@@ -249,6 +248,7 @@ function CreatePost() {
                                         type="text"
                                         placeholder="Enter restaurant address"
                                         onChange={(e) => setAddress(e.target.value)}
+                                        required
                                     />
                                 </Form.Group>
                             )}
@@ -260,8 +260,10 @@ function CreatePost() {
                             <Form.Label>Upload </Form.Label>
                             <Form.Control
                                 type="file"
+                                multiple
                                 accept='.jpg,.png,.jpeg'
-                                onChange={onMutate} />
+                                onChange={onMutate}
+                                required />
                         </Form.Group>
 
                         <div className="d-flex justify-content-center">
