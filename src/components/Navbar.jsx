@@ -6,11 +6,9 @@ import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import AuthContext from '../context/auth/AuthContext';
 import React, { useState, useContext } from 'react'
+import Form from 'react-bootstrap/Form';
+import { Col, Row } from 'react-bootstrap'
 
-/*
-TODO: 
-    1. fix the navbar so that it is always at the top of the page
-*/
 function Navbar() {
     const navigate = useNavigate()
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
@@ -42,13 +40,35 @@ function Navbar() {
     };
 
     return (
-        <div className='navbar mb-3 fixed-top background-color='>
+        <div className='navbar mb-3 fixed-top'>
             <div className='title' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> Spotfood </div>
+            <Form inline>
+                <Row>
+                    <Col xs="auto">
+                        <Form.Control
+                            type="text"
+                            placeholder="Search"
+                            className=" mr-sm-2"
+                        />
+                    </Col>
+                    <Col xs="auto">
+                        <Button type="submit">Submit</Button>
+                    </Col>
+                </Row>
+            </Form>
             <ul className='navbarList p-0 mb-0'>
                 <li>
                     <ButtonGroup>
                         <Button onClick={() => navigate('/')} variant="btn btn-outline-dark btn-sm">
                             Home
+                        </Button>
+                    </ButtonGroup>
+                </li>
+
+                <li>
+                    <ButtonGroup>
+                        <Button onClick={() => navigate('/explore')} variant="btn btn-outline-dark btn-sm">
+                            Explore
                         </Button>
                     </ButtonGroup>
                 </li>
@@ -61,30 +81,24 @@ function Navbar() {
                     </ButtonGroup>
                 </li>
 
-                <li>
+                {/* <li>
                     <ButtonGroup>
                         <Button onClick={() => navigate('/about')} variant="btn btn-outline-dark btn-sm">
                             About
                         </Button>
                     </ButtonGroup>
-                </li>
+                </li> */}
 
-                <Dropdown>
-                    <Dropdown.Toggle variant="light" size="sm" id="dropdown-basic" style={{ border: "transparent" }}>
-                        <img
-                            src="https://sm.ign.com/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.jpg"
-                            alt="icon"
-                            style={{
-                                width: "50px",
-                                borderRadius: "50%"
-                            }}
-                        />
-                    </Dropdown.Toggle>
+                <Dropdown as={ButtonGroup}>
+                    <Button href="/profile" variant="btn btn-outline-dark btn-sm">My Profile</Button>
+
+                    <Dropdown.Toggle split variant="btn btn-outline-dark btn-sm" id="dropdown-split-basic" />
 
                     <Dropdown.Menu>
-                        <Dropdown.Item href="/profile">My Profile</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item onClick={handleLogout}>Log out</Dropdown.Item>
+                        <Dropdown.Item
+                            style={{ fontSize: '0.9rem', padding: '0.25rem 0.50rem' }}
+                            variant="sm"
+                            onClick={handleLogout}>Log out</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </ul>

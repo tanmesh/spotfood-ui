@@ -10,6 +10,12 @@ body {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); 
 }
 
+p {
+  @media (max-width: 800px) {
+    font-size: 0.75rem;
+  }
+}
+
 .title {
   margin-left: 1rem;
   font-size: 2rem;
@@ -56,9 +62,13 @@ body {
 
 .cardDiv {
   display: flex;
-  justify-content: center !important;
+  /* justify-content: center !important; */
   align-items: center;
   margin-bottom: 1rem;
+
+  /* @media (max-width: 800px) {
+    width: 300px;
+  } */
 }
 
 .cardBodyDiv {
@@ -105,4 +115,14 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.home {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.dropdown-menu.show  {
+  width: 50%;
 }

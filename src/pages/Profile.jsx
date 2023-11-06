@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import { Pencil, X, Plus } from 'react-bootstrap-icons';
+import { X, Plus } from 'react-bootstrap-icons';
+import { toast } from 'react-toastify';
 import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
-import React, { useEffect, useState, useContext } from 'react'
 import Navbar from '../components/Navbar'
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import AuthContext from '../context/auth/AuthContext';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState, useContext } from 'react'
 
 // TODO: set loading 
 
@@ -100,15 +100,14 @@ function Profile() {
             emailId: profile.emailId,
             firstName: profile.firstName,
             lastName: profile.lastName,
-            followTagList: profile.followTagList,
+            followingList: profile.followingList,
             followersList: profile.followersList,
             tagList: selectedNewTags,
             nickName: profile.nickName,
-            lastUpdatedLocation: profile.lastUpdatedLocation,
-            password: profile.password
+            password: profile.password,
+            latitude: profile.latitude,
+            longitude: profile.longitude,
         }
-
-        console.log(profileData)
 
         const config = {
             headers: {
@@ -117,6 +116,7 @@ function Profile() {
             },
         };
 
+        console.log(profileData)
         axios.post('http://localhost:39114/user/edit', profileData, config)
             .then((response) => {
                 console.log('Response from http://localhost:39114/user/edit: ', response.data)

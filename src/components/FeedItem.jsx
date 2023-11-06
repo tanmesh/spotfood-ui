@@ -12,7 +12,7 @@ import React, { useState, useContext, useEffect } from 'react'
 function FeedItem({ post }) {
     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
     const [liked, setLiked] = useState(post.liked);
-    const [likeCnt, setLikeCnt] = useState(post.upvotes);
+    const [likeCnt, setLikeCnt] = useState(post.upVotes);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
     const navigate = useNavigate()
 
@@ -36,27 +36,26 @@ function FeedItem({ post }) {
         console.log('accessToken: ', accessToken)
         console.log('PostId', post)
         if (liked) { // already liked, set dislike
-            axios.get(`http://localhost:39114/user_post/unlike?postId=${post.postId}`, config)
+            axios.post(`http://localhost:39114/user_post/unlike?postId=${post.postId}`, '', config)
                 .then((response) => {
-                    console.log(response);
+                    console.log('Unlike response: ', response);
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    navigate('/sign-in')
+                    // navigate('/sign-in')
                 });
         } else {
-            axios.get(`http://localhost:39114/user_post/like?postId=${post.postId}`, config)
+            axios.post(`http://localhost:39114/user_post/like?postId=${post.postId}`, '', config)
                 .then((response) => {
-                    console.log(response);
+                    console.log('Like response: ', response);
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    navigate('/sign-in')
+                    // navigate('/sign-in')
                 });
         }
 
         setLikeCnt((prevState) => {
-            console.log('prevState: ', prevState)
             return liked ? prevState - 1 : prevState + 1;
         });
 
@@ -66,7 +65,7 @@ function FeedItem({ post }) {
     };
 
     return (
-        <div className='cardDiv'>
+        <div className='cardDiv d-flex justify-content-center'>
             <Card
                 border="border-dark"
                 className='card text-center'>
@@ -95,7 +94,7 @@ function FeedItem({ post }) {
                     </div>
                     <div>
                         <p className='m-0'><strong>Restaurant name:</strong> {post.locationName}</p>
-                        <p className='m-0'><strong>Author emailId: </strong> {post.authorEmailId}</p>
+                        <p className='m-0'><strong>Author name: </strong> {post.authorName}</p>
                     </div>
                 </Card.Body>
             </Card>

@@ -18,7 +18,7 @@ function App() {
     <AuthProvider>
       <Router>
         <div>
-          <Container>
+          <>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
@@ -27,7 +27,7 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/add-post" element={<CreatePost />} />
             </Routes>
-          </Container>
+          </>
           <Footer />
         </div>
       </Router>
