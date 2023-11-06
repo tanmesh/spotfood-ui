@@ -29,11 +29,6 @@ function Home() {
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
     const [selectedNewTags, setSelectedNewTags] = useState([]);
 
-    useEffect(() => {
-        enableLocation()
-
-    }, [])
-
     const enableLocation = () => {
         // use current location
         const options = {
@@ -60,10 +55,38 @@ function Home() {
         console.log('Range selected: ', radius)
     }
 
-    const handleTagFilter = () => {
+    /*
+        TODO:
+        as of now, only filters Tags. 
 
+        To filter range along with tags, need to update the body
+    */
+    const handleTagFilter = () => {
+        console.log('selectedNewTags[0]: ', selectedNewTags[0])
+        const body = {
+            "type": "TAG",
+            "tag": selectedNewTags[0],
+        }
+
+        console.log('body: ', body)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': accessToken,
+            },
+        };
+        axios.post(`http://localhost:39114/search/nearby`, body, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setUserposts([...response.data])
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
     }
-    
+
     const handleRangeFilter = () => {
         if (!geolocationEnabled) {
             toast.error('Enable location to filter posts')
@@ -86,21 +109,18 @@ function Home() {
                 'x-access-token': accessToken,
             },
         };
-        // axios.post(`http://localhost:39114/search/nearby?radius=${radius}`, body, config)
-        //     .then((response) => {
-        //         console.log('response.data: ', response.data)
-        //         setUserposts([...response.data])
-        //     })
-        //     .catch((error) => {
-        //         console.error("Error:", error);
-        //         toast.error('An unexpected error occurred. Please try again.');
-        //     });
+        axios.post(`http://localhost:39114/search/nearby?radius=${radius}`, body, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setUserposts([...response.data])
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
     }
 
-    useEffect(() => {
-        setIsLoading(true)
-        setAccessToken(getAccessTokenFromContext())
-
+    const fetchProfile = async () => {
         console.log('accessToken: ', accessToken)
         if (accessToken === 'null') {
             console.log('accessToken is null')
@@ -108,33 +128,42 @@ function Home() {
             return;
         }
 
-        const fetchProfile = async () => {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-access-token': accessToken,
-                },
-            };
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': accessToken,
+            },
+        };
 
-            axios.get(`http://localhost:39114/user_post/feeds/${lastFetched}`, config)
-                .then((response) => {
-                    console.log('response.data: ', response.data)
-                    setLastFetched(lastFetched + 2)
-                    setUserposts(response.data)
-                    setIsLoading(false)
-                })
-                .catch((error) => {
-                    setIsLoading(false)
-                    console.error("Error:", error);
-                    if (userposts.length === 0) {
-                        return;
-                    }
-                    toast.error('An unexpected error occurred. Please try again.');
-                });
-        }
+        axios.get(`http://localhost:39114/user_post/feeds/${lastFetched}`, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setLastFetched(lastFetched + 2)
+                setUserposts(response.data)
+                setIsLoading(false)
+            })
+            .catch((error) => {
+                setIsLoading(false)
+                console.error("Error:", error);
+                if (userposts.length === 0) {
+                    return;
+                }
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
+
+    const handleClearFilter = () => {
+        setSelectedNewTags([])
+        setRadius(1)
+    }
+
+    useEffect(() => {
+        enableLocation()
+        setIsLoading(true)
+        setAccessToken(getAccessTokenFromContext())
 
         fetchProfile()
-    }, [getAccessTokenFromContext, navigate, accessToken])
+    }, [getAccessTokenFromContext, accessToken])
 
     const handleLoadMore = async () => {
         const fetchProfile = async () => {
@@ -185,7 +214,9 @@ function Home() {
                     {userposts.length !== 0
                         ? (
                             <div className="d-flex mt-3 justify-content-center">
-                                <Button variant="btn btn btn-outline-dark" type="submit" onClick={handleLoadMore}>
+                                <Button
+                                    variant="btn btn btn-outline-dark"
+                                    onClick={handleLoadMore}>
                                     Load more
                                 </Button>
                             </div>
@@ -206,7 +237,7 @@ function Home() {
                                 alignContent: 'center',
                                 width: '15%'
                             }}>
-                            <Form style={{marginBottom: '2rem'}}>
+                            <Form style={{ marginBottom: '2rem' }}>
                                 <Col xs="auto">
                                     <Form.Group>
                                         <Form.Label>
@@ -236,7 +267,7 @@ function Home() {
                                     </Button>
                                 </div>} */}
 
-                            <Form>
+                            <Form style={{ marginBottom: '2rem' }}>
                                 <Col xs="auto">
                                     <Form.Group className="mb-3" controlId="tags">
                                         <TagsInput
@@ -250,8 +281,19 @@ function Home() {
                                 <Col xs="auto">
                                     <Button
                                         className='xs-1'
-                                        onClick={handleTagFilter}
-                                        type="submit">Add tag filter</Button>
+                                        onClick={handleTagFilter}>
+                                        Add tag filter
+                                    </Button>
+                                </Col>
+                            </Form>
+
+                            <Form>
+                                <Col xs="auto">
+                                    <Button
+                                        className='xs-1'
+                                        onClick={handleClearFilter}>
+                                        Clear filter
+                                    </Button>
                                 </Col>
                             </Form>
                         </div>
