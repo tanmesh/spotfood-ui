@@ -5,13 +5,13 @@ import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import AuthContext from '../context/auth/AuthContext';
+import UserContext from '../context/user/UserContext';
 import AWS from 'aws-sdk';
 import React, { useState, useContext, useEffect } from 'react'
 import Loading from '../shared/Loading';
 
 function CreatePost() {
-    const { getAccessTokenFromContext } = useContext(AuthContext);
+    const { getAccessTokenFromContext } = useContext(UserContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
     const [geolocationEnabled, setGeolocationEnabled] = useState(true);
     const [address, setAddress] = useState('')
@@ -20,19 +20,11 @@ function CreatePost() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
 
-    const [formData, setFormData] = useState({
-        tagList: [],
-        latitude: '',
-        longitude: '',
-        imgUrl: '',
-        locationName: '',
-    })
-
     useEffect(() => {
         setAccessToken(getAccessTokenFromContext())
-
         setLoading(true)
-        if (accessToken === null) {
+        console.log('accessToken: ', accessToken)
+        if (accessToken === 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
@@ -57,7 +49,15 @@ function CreatePost() {
         );
 
         setLoading(false)
-    }, [accessToken, navigate, getAccessTokenFromContext])
+    }, [accessToken, getAccessTokenFromContext])
+
+    const [formData, setFormData] = useState({
+        tagList: [],
+        latitude: '',
+        longitude: '',
+        imgUrl: '',
+        locationName: '',
+    })
 
     // Upload to S3 bucket
     const uploadFile = async (imgFile) => {

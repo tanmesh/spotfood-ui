@@ -1,19 +1,23 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import Card from 'react-bootstrap/Card';
+import UserContext from '../context/user/UserContext';
+import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
+import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import AuthContext from '../context/auth/AuthContext';
 import React, { useState, useContext, useEffect } from 'react'
-
-// TODO: 1. on change of likeCnt, update the post in the database
+import { toast } from 'react-toastify';
 
 function FeedItem({ post }) {
-    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+    const { getAccessTokenFromContext, getProfileFromContext, setProfileForContext } = useContext(UserContext);
+    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+    const [followed, setFollowed] = useState(false);
+    const [displayButton, setDisplayFollowButton] = useState(true);
+
     const navigate = useNavigate()
 
     const handleLikeClick = (e) => {
@@ -42,7 +46,7 @@ function FeedItem({ post }) {
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    // navigate('/sign-in')
+                    navigate('/sign-in')
                 });
         } else {
             axios.post(`http://localhost:39114/user_post/like?postId=${post.postId}`, '', config)
@@ -51,7 +55,7 @@ function FeedItem({ post }) {
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    // navigate('/sign-in')
+                    navigate('/sign-in')
                 });
         }
 
@@ -64,8 +68,40 @@ function FeedItem({ post }) {
         });
     };
 
+    const handleFollow = () => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': accessToken,
+            },
+        };
+
+        if (followed) {
+            axios.post(`http://localhost:39114/user/unfollow_user`, { "emailId": post.authorEmailId }, config)
+                .then((response) => {
+                    console.log('Unfollow response: ', response);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('Something went wrong, please try again later');
+                });
+        } else {
+            axios.post(`http://localhost:39114/user/follow_user`, { "emailId": post.authorEmailId }, config)
+                .then((response) => {
+                    console.log('Follow response: ', response);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('Something went wrong, please try again later');
+                });
+        }
+        setFollowed((prevState) => {
+            return !prevState;
+        });
+    }
+
     return (
-        <div className='cardDiv d-flex justify-content-center'>
+        <div className='cardDiv d-flex justify-content-end'>
             <Card
                 border="border-dark"
                 className='card text-center'>
@@ -92,9 +128,35 @@ function FeedItem({ post }) {
                             ))}
                         </Stack>
                     </div>
-                    <div>
-                        <p className='m-0'><strong>Restaurant name:</strong> {post.locationName}</p>
-                        <p className='m-0'><strong>Author name: </strong> {post.authorName}</p>
+                    <div className="cardBodyDiv m-0">
+                        <div>
+                            <p className="m-0">
+                                <strong>Restaurant:</strong> {post.locationName}
+                            </p>
+                        </div>
+                        {post.distance !== 0 && (
+                            <div>
+                                <p className="m-0" style={{ color: 'green' }}>
+                                    {post.distance} mile away
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="cardBodyDiv m-0">
+                        <div>
+                            <p className='m-0'>
+                                <strong>Author: </strong> {post.authorName}
+                            </p>
+                        </div>
+                        <div>
+                            {displayButton && (
+                                <Button
+                                    variant='sm btn btn-outline-dark'
+                                    onClick={handleFollow}>
+                                    {followed ? 'Unfollow' : 'Follow'}
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </Card.Body>
             </Card>

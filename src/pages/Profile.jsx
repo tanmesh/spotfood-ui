@@ -8,41 +8,38 @@ import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import AuthContext from '../context/auth/AuthContext';
+import UserContext from '../context/user/UserContext';
 import React, { useEffect, useState, useContext } from 'react'
 
 // TODO: set loading 
 
 function Profile() {
     // eslint-disable-next-line
-    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
+    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(UserContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
-    // eslint-disable-next-line
-    const [firstName, setFirstName] = useState('');
-    // eslint-disable-next-line
-    const [lastName, setLastName] = useState('');
-    // eslint-disable-next-line
-    const [emailId, setEmail] = useState('');
-    // eslint-disable-next-line
-    const [password, setPassword] = useState('');
     const profilePicUrl = 'https://sm.ign.com/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.jpg'
+
     const [addTagInput, setAddTagInput] = useState(false)
     const [removeTagInput, setRemoveTagInput] = useState(false)
     const [displayTags, setDisplayTags] = useState([]);
     const [selectedNewTags, setSelectedNewTags] = useState([]);
     const [removeTags, setRemoveTags] = useState([]);
-    const navigate = useNavigate()
+
+    const [displayFollowers, setDisplayFollowers] = useState([]);
+    const [removeFollowerInput, setRemoveFollowerInput] = useState(false)
+    const [removeFollowers, setRemoveFollowers] = useState([]);
+
     const [profile, setProfile] = useState({
         emailId: '',
         firstName: '',
         lastName: '',
-        followTagList: [],
+        followingList: [],
         followersList: [],
         tagList: [],
         nickName: '',
-        lastUpdatedLocation: '',
         password: '',
     })
+    const navigate = useNavigate()
 
     useEffect(() => {
         setAccessToken(getAccessTokenFromContext())
@@ -65,8 +62,10 @@ function Profile() {
 
             axios.get('http://localhost:39114/user/profile', config)
                 .then((response) => {
+                    console.log('Response from http://localhost:39114/user/profile: ', response.data)
                     setProfile(response.data)
                     setDisplayTags(response.data.tagList)
+                    setDisplayFollowers(response.data.followersList)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -92,21 +91,39 @@ function Profile() {
         setRemoveTags(removeTagsCopy)
     }
 
-    // TODO: handle submit
+    const handleRemoveFollower = (removeFollower) => {
+        setRemoveFollowerInput(true)
+        setDisplayFollowers(prevDisplayFollowers => prevDisplayFollowers.filter(follower => follower !== removeFollower))
+
+        console.log('removeFollower: ', removeFollower)
+
+        const removeFollowersCopy = [
+            ...removeFollowers,
+            removeFollower,
+        ]
+
+        console.log('removeFollowersCopy: ', removeFollowersCopy)
+        setRemoveFollowers(removeFollowersCopy)
+    }
+
+    const onMutate = (e) => {
+        setProfile({
+            ...profile,
+            [e.target.id]: e.target.value,
+        })
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const profileData = {
-            emailId: profile.emailId,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            followingList: profile.followingList,
-            followersList: profile.followersList,
+            ...profile,
             tagList: selectedNewTags,
-            nickName: profile.nickName,
-            password: profile.password,
-            latitude: profile.latitude,
-            longitude: profile.longitude,
+        }
+        for (const key in profileData) {
+            if (profileData[key] === null) {
+                delete profileData[key];
+            }
         }
 
         const config = {
@@ -115,16 +132,6 @@ function Profile() {
                 'x-access-token': accessToken,
             },
         };
-
-        console.log(profileData)
-        axios.post('http://localhost:39114/user/edit', profileData, config)
-            .then((response) => {
-                console.log('Response from http://localhost:39114/user/edit: ', response.data)
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                toast.error('Error updating profile!')
-            });
 
         if (removeTagInput) {
             console.log('removeTags: ', removeTags)
@@ -135,14 +142,41 @@ function Profile() {
                 .catch((error) => {
                     console.error("Error:", error);
                     toast.error('Error removing tags!')
+                    return;
                 });
         }
 
-        toast.success('Profile updated successfully!')
+        if (removeFollowerInput) {
+            console.log('removeTags: ', removeFollowers)
+            axios.post('http://localhost:39114/user/unfollow_user', { followersList: removeFollowers }, config)
+                .then((response) => {
+                    console.log('Response from http://localhost:39114/user/unfollow_user: ', response.data)
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('Error removing tags!')
+                    return;
+                });
+        }
+
+        console.log(profileData)
+        axios.post('http://localhost:39114/user/edit', profileData, config)
+            .then((response) => {
+                console.log('Response from http://localhost:39114/user/edit: ', response.data)
+                setDisplayTags(response.data.tagList)
+                toast.success('Profile updated successfully!')
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('Error updating profile!')
+            });
 
         setSelectedNewTags([])
         setRemoveTags([])
         setRemoveTagInput(false)
+
+        setRemoveFollowers([])
+        setRemoveFollowerInput(false)
     };
 
     return (
@@ -155,14 +189,6 @@ function Profile() {
                     borderRadius: "50%",
                 }} />
 
-                {/* <div className='ml-2 mr-1 mt-2'>
-                    <Stack direction="horizontal" gap={2} className='cardDiv'>
-                        {profile.followTagList.map((tag) => (
-                            <Badge bg="primary">{tag}</Badge>
-                        ))}
-                    </Stack>
-                </div> */}
-
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="firstName">
@@ -171,7 +197,7 @@ function Profile() {
                                 type="text"
                                 placeholder="Enter first name"
                                 value={profile.firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                onChange={onMutate}
                             />
                         </Form.Group>
 
@@ -181,7 +207,7 @@ function Profile() {
                                 type="text"
                                 placeholder="Enter last name"
                                 value={profile.lastName}
-                                onChange={(e) => setLastName(e.target.value)}
+                                onChange={onMutate}
                             />
                         </Form.Group>
 
@@ -210,15 +236,87 @@ function Profile() {
                             />
                         </Form.Group>
 
+                        {/* Tags */}
+                        <>
+                            <Form.Group className="mb-3" controlId="tags">
+                                <Form.Label>Tags </Form.Label>
+                                <Stack direction="horizontal" gap={2} className='cardDiv'>
+                                    {displayTags && displayTags.length > 0 &&
+                                        displayTags.map((tag) => (
+                                            <Badge bg="primary">
+                                                #{tag}
+                                                <X
+                                                    onClick={() => { handleRemoveTag(tag) }}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                        transition: 'transform 0.3s', // Add transition for the icon
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
+                                                    }} />
+                                            </Badge>
+                                        ))}
+                                    <Badge bg="primary">
+                                        {<Plus
+                                            onClick={() => { setAddTagInput(true) }} // TODO: add tag
+                                            style={{
+                                                cursor: 'pointer',
+                                                transition: 'transform 0.3s', // Add transition for the icon
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
+                                            }} />}
+                                    </Badge>
+                                </Stack>
+                            </Form.Group>
+                            {addTagInput &&
+                                <Form.Group className="mb-3" controlId="tags">
+                                    <TagsInput
+                                        value={selectedNewTags}
+                                        onChange={setSelectedNewTags}
+                                        name="tags"
+                                        placeHolder="Enter tag"
+                                    />
+                                </Form.Group>
+                            }
+                        </>
+
+                        {/* Following */}
                         <Form.Group className="mb-3" controlId="tags">
-                            <Form.Label>Tags </Form.Label>
-                            <Stack direction="horizontal" gap={2} className='cardDiv'>
-                                {displayTags && displayTags.length > 0 &&
-                                    displayTags.map((tag) => (
+                            <Form.Label>Following </Form.Label>
+                            <Stack direction="horizontal" gap={2} >
+                                {profile.following && profile.following.length > 0
+                                    ? profile.following.map((user) => (
                                         <Badge bg="primary">
-                                            #{tag}
+                                            {user}
+                                        </Badge>
+                                    ))
+                                    : (
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
+                                            <i style={{ color: 'red' }}>No one is following you yet</i>😩
+                                        </div>
+                                    )
+                                }
+                            </Stack>
+                        </Form.Group>
+
+                        {/* Follower */}
+                        <Form.Group className="mb-3" controlId="tags">
+                            <Form.Label>Follower </Form.Label>
+                            <Stack direction="horizontal" gap={2}>
+                                {displayFollowers
+                                    && displayFollowers.length > 0
+                                    ? (displayFollowers.map((user) => (
+                                        <Badge bg="primary">
+                                            {user}
                                             <X
-                                                onClick={() => { handleRemoveTag(tag) }}
+                                                onClick={() => { handleRemoveFollower(user) }}
                                                 style={{
                                                     cursor: 'pointer',
                                                     transition: 'transform 0.3s', // Add transition for the icon
@@ -230,34 +328,15 @@ function Profile() {
                                                     e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
                                                 }} />
                                         </Badge>
-                                    ))}
-                                <Badge bg="primary">
-                                    {<Plus
-                                        onClick={() => { setAddTagInput(true) }} // TODO: add tag
-                                        style={{
-                                            cursor: 'pointer',
-                                            transition: 'transform 0.3s', // Add transition for the icon
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
-                                        }} />}
-                                </Badge>
+                                    )))
+                                    : (
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <i style={{ color: 'red' }}>You are not following anyone yet</i>{' '}😩
+                                        </div>
+                                    )
+                                }
                             </Stack>
                         </Form.Group>
-
-                        {addTagInput &&
-                            <Form.Group className="mb-3" controlId="tags">
-                                <TagsInput
-                                    value={selectedNewTags}
-                                    onChange={setSelectedNewTags}
-                                    name="tags"
-                                    placeHolder="Enter tag"
-                                />
-                            </Form.Group>
-                        }
 
                         <Form.Group controlId="avatar" className="mb-3">
                             <Form.Label>Upload new avatar</Form.Label>

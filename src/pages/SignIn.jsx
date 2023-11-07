@@ -5,15 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import AuthContext from '../context/auth/AuthContext'
+import UserContext from '../context/user/UserContext'
 import 'react-toastify/dist/ReactToastify.css';
 
 function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
-    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext)
-    // eslint-disable-next-line
+    const { getAccessTokenFromContext, setAccessTokenFromContext, setProfileForContext } = useContext(UserContext)
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
 
     const handleSubmit = (e) => {

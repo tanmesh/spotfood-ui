@@ -11,8 +11,9 @@ body {
 }
 
 p {
+  font-size: 14px;
   @media (max-width: 800px) {
-    font-size: 0.75rem;
+    font-size: 12px;
   }
 }
 
@@ -121,8 +122,4 @@ p {
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
-
-.dropdown-menu.show  {
-  width: 50%;
 }

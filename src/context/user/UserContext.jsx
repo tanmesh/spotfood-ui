@@ -1,41 +1,37 @@
-// import { createContext, useState, useContext } from "react";
-// import axios from 'axios'
-// import AuthContext from '../auth/AuthContext';
-// import React from 'react'
+import { createContext, useState } from "react";
 
-// const UserContext = createContext()
+const UserContext = createContext()
 
-// export const UserProvider = ({ children }) => {
-//     const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(AuthContext);
-//     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
-//     const [profile, setProfile] = useState({})
+export const UserProvider = ({ children }) => {
+    const [accessToken, setAccessToken] = useState(sessionStorage.getItem('accessToken'))
+    const [profile, setProfile] = useState({})
 
-//     const getProfileFromContext = () => {
-//         const config = {
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'x-access-token': accessToken,
-//             },
-//         };
+    const setAccessTokenFromContext = (token) => {
+        setAccessToken(token)
+        sessionStorage.setItem('accessToken', token, 1000);
+    }
 
-//         axios.get(`http://localhost:39114/user/profile`, config)
-//             .then((response) => {
-//                 console.log(response.data);
-//             })
-//             .catch((error) => {
-//                 console.error("Error:", error);
-//             });
+    const getAccessTokenFromContext = () => {
+        return accessToken;
+    }
 
-//         setProfile(profile)
-//         return profile
-//     }
+    const setProfileForContext = (profile) => {
+        setProfile(profile)
+    }
 
-//     return <UserContext.Provider
-//         value={{
-//             getProfileFromContext,
-//         }}>
-//         {children}
-//     </UserContext.Provider>
-// }
+    const getProfileFromContext = () => {
+        return profile;
+    }
 
-// export default UserContext
+    return <UserContext.Provider
+        value={{
+            setAccessTokenFromContext,
+            getAccessTokenFromContext,
+            setProfileForContext,
+            getProfileFromContext,
+        }}>
+        {children}
+    </UserContext.Provider>
+}
+
+export default UserContext

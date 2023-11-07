@@ -17,7 +17,7 @@ import RangeSlider from 'react-bootstrap-range-slider';
     TODO:
     1. fetch user posts when its not signed-in
 */
-function Home() {
+function Explore() {
     const { getAccessTokenFromContext } = useContext(UserContext);
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
 
@@ -120,20 +120,14 @@ function Home() {
 
     const fetchFeed = async () => {
         console.log('accessToken: ', accessToken)
-        if (accessToken === 'null') {
-            console.log('accessToken is null')
-            navigate('/sign-in')
-            return;
-        }
 
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
             },
         };
 
-        axios.get(`http://localhost:39114/user_post/feeds/${lastFetched}`, config)
+        axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
                 setLastFetched(lastFetched + 2)
@@ -157,12 +151,6 @@ function Home() {
 
     useEffect(() => {
         setAccessToken(getAccessTokenFromContext())
-        setLoading(true)
-        if (accessToken === 'null') {
-            console.log('accessToken is null')
-            navigate('/sign-in')
-            return;
-        }
 
         enableLocation()
         fetchFeed()
@@ -170,15 +158,14 @@ function Home() {
     }, [accessToken, getAccessTokenFromContext])
 
     const handleLoadMore = async () => {
-        const fetchProfile = async () => {
+        const fetchFeed = async () => {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': accessToken,
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/feeds/${lastFetched}`, config)
+            axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])
@@ -189,7 +176,7 @@ function Home() {
                 });
         }
 
-        fetchProfile()
+        fetchFeed()
     }
 
     if (isLoading) {
@@ -231,73 +218,75 @@ function Home() {
                             </div>
                         )}
                 </Col>
-                <Col xs={5}>
-                    <Row className='mb-2'>
-                        <div
-                            style={{
-                                marginTop: '5rem',
-                                position: 'fixed',
-                                justifyContent: 'center',
-                                alignContent: 'center',
-                                width: '15%'
-                            }}>
-                            <Form style={{ marginBottom: '2rem' }}>
-                                <Col xs="auto">
-                                    <Form.Group>
-                                        <Form.Label>
-                                            Range
-                                        </Form.Label>
-                                        <RangeSlider
-                                            value={radius}
-                                            onChange={handleRange}
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs'
-                                        onClick={handleRangeFilter}>
-                                        Add range filter
-                                    </Button>
-                                </Col>
-                            </Form>
+                {accessToken != 'null' && (
+                    <Col xs={5}>
+                        <Row className='mb-2'>
+                            <div
+                                style={{
+                                    marginTop: '5rem',
+                                    position: 'fixed',
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    width: '15%'
+                                }}>
+                                <Form style={{ marginBottom: '2rem' }}>
+                                    <Col xs="auto">
+                                        <Form.Group>
+                                            <Form.Label>
+                                                Range
+                                            </Form.Label>
+                                            <RangeSlider
+                                                value={radius}
+                                                onChange={handleRange}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col xs="auto">
+                                        <Button
+                                            className='xs'
+                                            onClick={handleRangeFilter}>
+                                            Add range filter
+                                        </Button>
+                                    </Col>
+                                </Form>
 
-                            <Form style={{ marginBottom: '2rem' }}>
-                                <Col xs="auto">
-                                    <Form.Group className="mb-3" controlId="tags">
-                                        <TagsInput
-                                            value={selectedNewTags}
-                                            onChange={setSelectedNewTags}
-                                            name="tags"
-                                            placeHolder="Enter tag"
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs-1'
-                                        onClick={handleTagFilter}>
-                                        Add tag filter
-                                    </Button>
-                                </Col>
-                            </Form>
+                                <Form style={{ marginBottom: '2rem' }}>
+                                    <Col xs="auto">
+                                        <Form.Group className="mb-3" controlId="tags">
+                                            <TagsInput
+                                                value={selectedNewTags}
+                                                onChange={setSelectedNewTags}
+                                                name="tags"
+                                                placeHolder="Enter tag"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col xs="auto">
+                                        <Button
+                                            className='xs-1'
+                                            onClick={handleTagFilter}>
+                                            Add tag filter
+                                        </Button>
+                                    </Col>
+                                </Form>
 
-                            <Form>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs-1'
-                                        onClick={handleClearFilter}>
-                                        Clear filter
-                                    </Button>
-                                </Col>
-                            </Form>
-                        </div>
-                    </Row>
+                                <Form>
+                                    <Col xs="auto">
+                                        <Button
+                                            className='xs-1'
+                                            onClick={handleClearFilter}>
+                                            Clear filter
+                                        </Button>
+                                    </Col>
+                                </Form>
+                            </div>
+                        </Row>
 
-                </Col>
+                    </Col>
+                )}
             </Row >
         </>
     )
 }
 
-export default Home
+export default Explore
