@@ -1,13 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { toast } from 'react-toastify';
-import { Col, Row } from 'react-bootstrap'
+import { Col, Row, Spinner } from 'react-bootstrap'
 import axios from 'axios'
-import Dropdown from 'react-bootstrap/Dropdown';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { Form, Dropdown, Button, ButtonGroup, ListGroup } from 'react-bootstrap';
 import UserContext from '../context/user/UserContext';
 import React, { useState, useContext } from 'react'
-import Form from 'react-bootstrap/Form';
 
 function Navbar() {
     const navigate = useNavigate()
@@ -17,7 +14,7 @@ function Navbar() {
     const location = useLocation();
 
     // Handling logout 
-    const handleLogout = (e) => {
+    const handleLogout = () => {
         console.log(accessToken);
 
         const config = {
@@ -54,6 +51,56 @@ function Navbar() {
         return path === location.pathname;
     }
 
+    const autocompleteResult = (keyword) => {
+        return new Promise((res, rej) => {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': getAccessTokenFromContext(),
+                },
+            };
+
+            axios.get(`http://localhost:39114/tag/autocomplete/${keyword}`, config)
+                .then((response) => {
+                    res(response.data);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('An unexpected error occurred. Please try again.');
+                });
+        });
+    };
+
+    const [results, setResults] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchItem, setSearchItem] = useState("");
+    const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
+
+    const handleInputChange = (e) => {
+        const searchItemValue = e.target.value;
+        setSearchItem(searchItemValue);
+        setIsSearchItemSelected(false);
+        setResults([]);
+
+        if (searchItemValue.length > 1) {
+            setIsLoading(true);
+            autocompleteResult(searchItemValue)
+                .then((res) => {
+                    setResults(res);
+                    setIsLoading(false);
+                })
+                .catch(() => {
+                    setIsLoading(false);
+                });
+        }
+    };
+
+    const onSearchItemSelected = (selectedSearchItem) => {
+        setSearchItem(selectedSearchItem);
+        setIsSearchItemSelected(true);
+        setResults([]);
+    };
+
     return (
         <div className='navbar mb-3 fixed-top'>
             <div
@@ -65,11 +112,32 @@ function Navbar() {
             <Form inline>
                 <Row>
                     <Col xs="auto">
-                        <Form.Control
-                            type="text"
-                            placeholder="Search"
-                            className="mr-sm-2"
-                        />
+                        <Form.Group className="typeahead-form-group">
+                            <Form.Control
+                                type="text"
+                                autoComplete="off"
+                                onChange={handleInputChange}
+                                value={searchItem}
+                                placeHolder="Search for tags, restaurants, users..."
+                            />
+                            <ListGroup className="typeahead-list-group">
+                                {!isSearchItemSelected &&
+                                    results.length > 0 &&
+                                    results.map((result) => (
+                                        <ListGroup.Item
+                                            key={result}
+                                            className="typeahead-list-group-item"
+                                            onClick={() => onSearchItemSelected(result)}>
+                                            {result}
+                                        </ListGroup.Item>
+                                    ))}
+                                {!results.length && isLoading && (
+                                    <div className="typeahead-spinner-container">
+                                        <Spinner animation="border" />
+                                    </div>
+                                )}
+                            </ListGroup>
+                        </Form.Group>
                     </Col>
                     <Col xs="auto m-0">
                         <Button
