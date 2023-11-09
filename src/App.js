@@ -11,6 +11,7 @@ import Footer from "./components/Footer.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import { ToastContainer } from 'react-toastify';
 import React from "react";
+import MyPost from './pages/MyPost.jsx';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/add-post" element={<CreatePost />} />
               <Route path="/explore" element={<Explore />} />
+              <Route path='/my-posts' element={<MyPost />} />
             </Routes>
           </>
           <Footer />

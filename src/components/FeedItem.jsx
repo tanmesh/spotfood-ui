@@ -1,12 +1,12 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios'
 import UserContext from '../context/user/UserContext';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, Profiler, useEffect } from 'react'
 import { toast } from 'react-toastify';
 
 function FeedItem({ post, currentUserProfile }) {
@@ -14,7 +14,8 @@ function FeedItem({ post, currentUserProfile }) {
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
     // eslint-disable-next-line
-    const [displayButton, setDisplayFollowButton] = useState(currentUserProfile && post.authorEmailId !== currentUserProfile.emailId);
+    const [displayButton, setDisplayFollowButton] = useState(typeof(currentUserProfile) !== 'undefined' && post.authorEmailId !== currentUserProfile.emailId);
+    const [profile, setProfile] = useState(currentUserProfile);
     const navigate = useNavigate()
 
     const handleLikeClick = (e) => {
@@ -64,8 +65,7 @@ function FeedItem({ post, currentUserProfile }) {
     };
 
     const followed = () => {
-        console.log('Following list: ', currentUserProfile.followingList);
-        return currentUserProfile && currentUserProfile.followingList.includes(post.authorEmailId);
+        return !profile || profile.followingList.includes(post.authorEmailId);
     }
 
     const handleFollow = () => {
@@ -77,28 +77,33 @@ function FeedItem({ post, currentUserProfile }) {
         };
 
         if (followed()) {
-            axios.post(`http://localhost:39114/user/unfollow_user`, { "emailId": post.authorEmailId }, config)
+            axios.post(`http://localhost:39114/user/unfollow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Unfollow response: ', response);
-                    // setProfile((prevState) => {
-                    //     const newFollowingList = prevState.followingList.filter((emailId) => {
-                    //         return emailId !== post.authorEmailId;
-                    //     });
-                    //     return { ...prevState, followingList: newFollowingList };
-                    // })
+                    if (Profiler) {
+                        setProfile((prevState) => {
+                            const newFollowingList = prevState.followingList.filter((emailId) => {
+                                return emailId !== post.authorEmailId;
+                            });
+                            return { ...prevState, followingList: newFollowingList };
+                        })
+                    }
+
                 })
                 .catch((error) => {
                     console.error("Error:", error);
                     toast.error('Something went wrong, please try again later');
                 });
         } else {
-            axios.post(`http://localhost:39114/user/follow_user`, { "emailId": post.authorEmailId }, config)
+            axios.post(`http://localhost:39114/user/follow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Follow response: ', response);
-                    // setProfile((prevState) => {
-                    //     const newFollowingList = [...prevState.followingList, post.authorEmailId];
-                    //     return { ...prevState, followingList: newFollowingList };
-                    // })
+                    if (profile) {
+                        setProfile((prevState) => {
+                            const newFollowingList = [...prevState.followingList, post.authorEmailId];
+                            return { ...prevState, followingList: newFollowingList };
+                        })
+                    }
                 })
                 .catch((error) => {
                     console.error("Error:", error);

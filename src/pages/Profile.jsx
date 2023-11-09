@@ -62,7 +62,7 @@ function Profile() {
                     console.log('Response from http://localhost:39114/user/profile: ', response.data)
                     setProfile(response.data)
                     setDisplayTags(response.data.tagList)
-                    setDisplayFollowings(response.data.followersList)
+                    setDisplayFollowings(response.data.followingList)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -296,7 +296,7 @@ function Profile() {
                                     ))
                                     : (
                                         <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                                            <i style={{ color: 'red' }}>No one is following you yet</i>😩
+                                            <p><i style={{ color: 'red', fontSize: '16px' }}>No one is following you yet {' '}</i>😩</p>
                                         </div>
                                     )
                                 }
@@ -307,8 +307,7 @@ function Profile() {
                         <Form.Group className="mb-3" controlId="tags">
                             <Form.Label>Following </Form.Label>
                             <Stack direction="horizontal" gap={2}>
-                                {displayFollowings
-                                    && displayFollowings.length > 0
+                                {displayFollowings && displayFollowings.length > 0
                                     ? (displayFollowings.map((user) => (
                                         <Badge bg="primary">
                                             {user}
@@ -328,7 +327,7 @@ function Profile() {
                                     )))
                                     : (
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <i style={{ color: 'red' }}>You are not following anyone yet</i>{' '}😩
+                                            <p><i style={{ color: 'red', fontSize: '16px' }}>You are not following anyone yet {' '}</i>😩</p>
                                         </div>
                                     )
                                 }

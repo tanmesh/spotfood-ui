@@ -101,9 +101,12 @@ function Home() {
             });
     }
 
-    const handleClearFilter = () => {
+    const handleClearFilter = (e) => {
+        e.preventDefault()
         setSelectedNewTags([])
         setRadius(1)
+
+        window.location.reload();
     }
 
     useEffect(() => {

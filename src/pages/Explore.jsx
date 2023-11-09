@@ -128,7 +128,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
+            axios.get(`http://localhost:39114/user_post/explore/${lastFetched}`, config)
                 .then((response) => {
                     console.log('response.data: ', response.data)
                     setLastFetched(lastFetched + 2)
@@ -157,7 +157,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
+            axios.get(`http://localhost:39114/user_post/explore/${lastFetched}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])

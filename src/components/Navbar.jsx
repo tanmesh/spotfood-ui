@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { toast } from 'react-toastify';
 import { Col, Row } from 'react-bootstrap'
 import axios from 'axios'
@@ -14,6 +14,7 @@ function Navbar() {
     const { getAccessTokenFromContext, setAccessTokenForContext } = useContext(UserContext);
     // eslint-disable-next-line
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+    const location = useLocation();
 
     // Handling logout 
     const handleLogout = (e) => {
@@ -49,6 +50,10 @@ function Navbar() {
 
     }
 
+    const isActive = (path) => {
+        return path === location.pathname;
+    }
+
     return (
         <div className='navbar mb-3 fixed-top'>
             <div
@@ -63,18 +68,24 @@ function Navbar() {
                         <Form.Control
                             type="text"
                             placeholder="Search"
-                            className=" mr-sm-2"
+                            className="mr-sm-2"
                         />
                     </Col>
-                    <Col xs="auto">
-                        <Button type="submit">Submit</Button>
+                    <Col xs="auto m-0">
+                        <Button
+                            variant="btn btn-outline-dark"
+                            type="submit">
+                            Submit
+                        </Button>
                     </Col>
                 </Row>
             </Form>
             <ul className='navbarList p-0 mb-0'>
                 <li>
                     <ButtonGroup>
-                        <Button onClick={() => navigate('/')} variant="btn btn-outline-dark btn-sm">
+                        <Button
+                            onClick={() => navigate('/')}
+                            variant={isActive('/') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
                             <div>
                                 {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-house-fill" viewBox="0 0 16 16">
@@ -93,7 +104,7 @@ function Navbar() {
                     <ButtonGroup>
                         <Button
                             onClick={() => navigate('/explore')}
-                            variant="btn btn-outline-dark btn-sm">
+                            variant={isActive('/explore') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
                             Explore
                         </Button>
                     </ButtonGroup>
@@ -103,7 +114,7 @@ function Navbar() {
                     <ButtonGroup>
                         <Button
                             onClick={() => navigate('/add-post')}
-                            variant="btn btn-outline-dark btn-sm">
+                            variant={isActive('/add-post') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
                             Add new post
                         </Button>
                     </ButtonGroup>
@@ -120,13 +131,20 @@ function Navbar() {
                 <Dropdown as={ButtonGroup}>
                     <Button
                         href="/profile"
-                        variant="btn btn-outline-dark btn-sm">
+                        variant={isActive('/profile') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
                         My Profile
                     </Button>
 
-                    <Dropdown.Toggle split variant="btn btn-outline-dark btn-sm" id="dropdown-split-basic" />
+                    <Dropdown.Toggle
+                        split
+                        variant={isActive('/profile') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
+                        id="dropdown-split-basic" />
 
                     <Dropdown.Menu>
+                        <Dropdown.Item
+                            style={{ fontSize: '0.9rem', padding: '0.25rem 0.50rem' }}
+                            variant="sm"
+                            onClick={() => navigate('/my-posts')}>My posts</Dropdown.Item>
                         <Dropdown.Item
                             style={{ fontSize: '0.9rem', padding: '0.25rem 0.50rem' }}
                             variant="sm"
