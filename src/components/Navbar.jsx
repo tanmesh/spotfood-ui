@@ -11,7 +11,7 @@ import Form from 'react-bootstrap/Form';
 
 function Navbar() {
     const navigate = useNavigate()
-    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(UserContext);
+    const { getAccessTokenFromContext, setAccessTokenForContext } = useContext(UserContext);
     // eslint-disable-next-line
     const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
 
@@ -29,7 +29,7 @@ function Navbar() {
         axios.post('http://localhost:39114/user/logout', '', config)
             .then((response) => {
                 console.log(response.data);
-                setAccessTokenFromContext(null)
+                setAccessTokenForContext(null)
                 toast.success('Logout successful!')
                 navigate('/sign-in')
             })
@@ -39,9 +39,24 @@ function Navbar() {
             });
     };
 
+    const handleTitleClick = () => {
+        console.log('getAccessTokenFromContext: ', getAccessTokenFromContext())
+        if (getAccessTokenFromContext() === 'null') {
+            navigate('/explore')
+        } else {
+            navigate('/')
+        }
+
+    }
+
     return (
         <div className='navbar mb-3 fixed-top'>
-            <div className='title' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> Spotfood </div>
+            <div
+                className='title'
+                onClick={handleTitleClick}
+                style={{ cursor: 'pointer' }}>
+                Spotfood
+            </div>
             <Form inline>
                 <Row>
                     <Col xs="auto">
@@ -83,7 +98,7 @@ function Navbar() {
                         </Button>
                     </ButtonGroup>
                 </li>
-                
+
                 <li>
                     <ButtonGroup>
                         <Button

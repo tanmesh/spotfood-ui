@@ -11,9 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { setAccessTokenForContext } = useContext(UserContext)
     const navigate = useNavigate()
-    const { getAccessTokenFromContext, setAccessTokenFromContext, setProfileForContext } = useContext(UserContext)
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext())
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -32,20 +31,16 @@ function SignIn() {
         axios.post('http://localhost:39114/user/login', userData, config)
             .then((response) => {
                 console.log(response.data);
-                setAccessTokenFromContext(response.data.accessToken)
-                setAccessToken(response.data.accessToken)
+                setAccessTokenForContext(response.data.accessToken)
                 toast.success('Login successful!')
                 navigate('/')
             })
             .catch((error) => {
                 console.error("Error:", error);
                 if (error.response && error.response.status === '400') {
-                    // Handle the 400 Bad Request error specifically
-                    // You can access the error response data for more details
-                    const errorMessage = error.response.data; // This might be "user not found" or similar
+                    const errorMessage = error.response.data;
                     toast.error(`Error: ${errorMessage}`);
                 } else {
-                    // Handle other types of errors
                     toast.error('An unexpected error occurred. Please try again.');
                 }
             });

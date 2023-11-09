@@ -7,6 +7,11 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import React, { useState } from 'react'
 
+/*
+    TODO:
+        show password
+*/
+
 function SignUp() {
     const [formData, setFormData] = useState({
         firstName: '',

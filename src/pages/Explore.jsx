@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Col, Row } from 'react-bootstrap'
 import { TagsInput } from "react-tag-input-component";
@@ -9,28 +8,21 @@ import FeedItem from '../components/FeedItem'
 import Button from 'react-bootstrap/Button';
 import Spinner from '../shared/Loading'
 import React, { useContext, useEffect, useState } from 'react'
+import NoPost from '../components/NoPost'
 
 import Form from 'react-bootstrap/Form';
 import RangeSlider from 'react-bootstrap-range-slider';
 
-/*
-    TODO:
-    1. fetch user posts when its not signed-in
-*/
 function Explore() {
     const { getAccessTokenFromContext } = useContext(UserContext);
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
 
     const [loading, setLoading] = useState(false);
     const [userposts, setUserposts] = useState([])
     const [lastFetched, setLastFetched] = useState(0)
-    const [isLoading, setIsLoading] = useState(false);
     const [radius, setRadius] = useState(1);
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
     const [selectedNewTags, setSelectedNewTags] = useState([]);
-
-    const navigate = useNavigate()
 
     const enableLocation = () => {
         // use current location
@@ -70,7 +62,7 @@ function Explore() {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
         axios.post(`http://localhost:39114/search/nearby`, body, config)
@@ -80,7 +72,7 @@ function Explore() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                toast.error('An unexpected error occurred. Please try again.');
+                toast.error('Log In / Sign Up to access filters');
             });
     }
 
@@ -104,7 +96,7 @@ function Explore() {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
         axios.post(`http://localhost:39114/search/nearby`, body, config)
@@ -114,33 +106,7 @@ function Explore() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                toast.error('An unexpected error occurred. Please try again.');
-            });
-    }
-
-    const fetchFeed = async () => {
-        console.log('accessToken: ', accessToken)
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-
-        axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
-            .then((response) => {
-                console.log('response.data: ', response.data)
-                setLastFetched(lastFetched + 2)
-                setUserposts(response.data)
-                setIsLoading(false)
-            })
-            .catch((error) => {
-                setIsLoading(false)
-                console.error("Error:", error);
-                if (userposts.length === 0) {
-                    return;
-                }
-                toast.error('An unexpected error occurred. Please try again.');
+                toast.error('Log In / Sign Up to access filters');
             });
     }
 
@@ -150,12 +116,38 @@ function Explore() {
     }
 
     useEffect(() => {
-        setAccessToken(getAccessTokenFromContext())
-
+        setLoading(true)
         enableLocation()
+
+        const fetchFeed = async () => {
+            console.log('accessToken: ', getAccessTokenFromContext())
+
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            axios.get(`http://localhost:39114/user_post/explore?startAfter=${lastFetched}`, config)
+                .then((response) => {
+                    console.log('response.data: ', response.data)
+                    setLastFetched(lastFetched + 2)
+                    setUserposts(response.data)
+                    setLoading(false)
+                })
+                .catch((error) => {
+                    setLoading(false)
+                    console.error("Error:", error);
+                    if (userposts.length === 0) {
+                        return;
+                    }
+                    toast.error('An unexpected error occurred. Please try again.');
+                });
+        }
         fetchFeed()
+
         setLoading(false)
-    }, [accessToken, getAccessTokenFromContext])
+    }, [getAccessTokenFromContext])
 
     const handleLoadMore = async () => {
         const fetchFeed = async () => {
@@ -179,7 +171,7 @@ function Explore() {
         fetchFeed()
     }
 
-    if (isLoading) {
+    if (loading) {
         return <Spinner />
     }
 
@@ -199,91 +191,87 @@ function Explore() {
                                         post={post} />
                                 ))}
                             </ul>
+
+                            {userposts.length !== 0
+                                ? (
+                                    <div className="d-flex mt-3 justify-content-end" style={{ marginRight: '9rem' }}>
+                                        <Button
+                                            variant="btn btn btn-outline-dark"
+                                            onClick={handleLoadMore}>
+                                            Load more
+                                        </Button>
+                                    </div>
+                                )
+                                : (
+                                    <NoPost />
+                                )}
                         </main>
                     </Row>
-
-                    {userposts.length !== 0
-                        ? (
-                            <div className="d-flex mt-3 justify-content-end" style={{ marginRight: '9rem' }}>
-                                <Button
-                                    variant="btn btn btn-outline-dark"
-                                    onClick={handleLoadMore}>
-                                    Load more
-                                </Button>
-                            </div>
-                        )
-                        : (
-                            <div>
-                                No Post has been uploaded yet 🥺
-                            </div>
-                        )}
                 </Col>
-                {accessToken != 'null' && (
-                    <Col xs={5}>
-                        <Row className='mb-2'>
-                            <div
-                                style={{
-                                    marginTop: '5rem',
-                                    position: 'fixed',
-                                    justifyContent: 'center',
-                                    alignContent: 'center',
-                                    width: '15%'
-                                }}>
-                                <Form style={{ marginBottom: '2rem' }}>
-                                    <Col xs="auto">
-                                        <Form.Group>
-                                            <Form.Label>
-                                                Range
-                                            </Form.Label>
-                                            <RangeSlider
-                                                value={radius}
-                                                onChange={handleRange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs="auto">
-                                        <Button
-                                            className='xs'
-                                            onClick={handleRangeFilter}>
-                                            Add range filter
-                                        </Button>
-                                    </Col>
-                                </Form>
+                <Col xs={5}>
+                    <Row className='mb-2'>
+                        <div
+                            style={{
+                                marginTop: '5rem',
+                                position: 'fixed',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                width: '15%'
+                            }}>
+                            <Form style={{ marginBottom: '2rem' }}>
+                                <Col xs="auto">
+                                    <Form.Group>
+                                        <Form.Label>
+                                            Range
+                                        </Form.Label>
+                                        <RangeSlider
+                                            value={radius}
+                                            onChange={handleRange}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs="auto">
+                                    <Button
+                                        className='xs'
+                                        onClick={handleRangeFilter}>
+                                        Add range filter
+                                    </Button>
+                                </Col>
+                            </Form>
 
-                                <Form style={{ marginBottom: '2rem' }}>
-                                    <Col xs="auto">
-                                        <Form.Group className="mb-3" controlId="tags">
-                                            <TagsInput
-                                                value={selectedNewTags}
-                                                onChange={setSelectedNewTags}
-                                                name="tags"
-                                                placeHolder="Enter tag"
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs="auto">
-                                        <Button
-                                            className='xs-1'
-                                            onClick={handleTagFilter}>
-                                            Add tag filter
-                                        </Button>
-                                    </Col>
-                                </Form>
+                            <Form style={{ marginBottom: '2rem' }}>
+                                <Col xs="auto">
+                                    <Form.Group className="mb-3" controlId="tags">
+                                        <TagsInput
+                                            value={selectedNewTags}
+                                            onChange={setSelectedNewTags}
+                                            name="tags"
+                                            placeHolder="Enter tag"
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs="auto">
+                                    <Button
+                                        className='xs-1'
+                                        onClick={handleTagFilter}>
+                                        Add tag filter
+                                    </Button>
+                                </Col>
+                            </Form>
 
-                                <Form>
-                                    <Col xs="auto">
-                                        <Button
-                                            className='xs-1'
-                                            onClick={handleClearFilter}>
-                                            Clear filter
-                                        </Button>
-                                    </Col>
-                                </Form>
-                            </div>
-                        </Row>
+                            <Form>
+                                <Col xs="auto">
+                                    <Button
+                                        className='xs-1'
+                                        onClick={handleClearFilter}>
+                                        Clear filter
+                                    </Button>
+                                </Col>
+                            </Form>
+                        </div>
+                    </Row>
 
-                    </Col>
-                )}
+                </Col>
             </Row >
         </>
     )

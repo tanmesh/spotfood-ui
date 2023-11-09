@@ -15,8 +15,7 @@ import React, { useEffect, useState, useContext } from 'react'
 
 function Profile() {
     // eslint-disable-next-line
-    const { getAccessTokenFromContext, setAccessTokenFromContext } = useContext(UserContext);
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+    const { getAccessTokenFromContext } = useContext(UserContext);
     const profilePicUrl = 'https://sm.ign.com/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.jpg'
 
     const [addTagInput, setAddTagInput] = useState(false)
@@ -25,9 +24,10 @@ function Profile() {
     const [selectedNewTags, setSelectedNewTags] = useState([]);
     const [removeTags, setRemoveTags] = useState([]);
 
-    const [displayFollowers, setDisplayFollowers] = useState([]);
-    const [removeFollowerInput, setRemoveFollowerInput] = useState(false)
-    const [removeFollowers, setRemoveFollowers] = useState([]);
+    const [displayFollowings, setDisplayFollowings] = useState([]);
+    const [removeFollowingInput, setRemoveFollowingInput] = useState(false)
+    const [removeFollowings, setRemoveFollowings] = useState([]);
+    const navigate = useNavigate()
 
     const [profile, setProfile] = useState({
         emailId: '',
@@ -39,14 +39,11 @@ function Profile() {
         nickName: '',
         password: '',
     })
-    const navigate = useNavigate()
 
     useEffect(() => {
-        setAccessToken(getAccessTokenFromContext())
+        console.log('accessToken: ', getAccessTokenFromContext())
 
-        console.log('accessToken: ', accessToken)
-
-        if (accessToken === null) {
+        if (getAccessTokenFromContext() === null) {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
@@ -56,7 +53,7 @@ function Profile() {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': accessToken,
+                    'x-access-token': getAccessTokenFromContext(),
                 },
             };
 
@@ -65,7 +62,7 @@ function Profile() {
                     console.log('Response from http://localhost:39114/user/profile: ', response.data)
                     setProfile(response.data)
                     setDisplayTags(response.data.tagList)
-                    setDisplayFollowers(response.data.followersList)
+                    setDisplayFollowings(response.data.followersList)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -73,7 +70,7 @@ function Profile() {
                 });
         }
         fetchProfile()
-    }, [navigate, getAccessTokenFromContext, accessToken])
+    }, [navigate, getAccessTokenFromContext])
 
     const handleRemoveTag = (removeTag) => {
         setRemoveTagInput(true)
@@ -91,19 +88,19 @@ function Profile() {
         setRemoveTags(removeTagsCopy)
     }
 
-    const handleRemoveFollower = (removeFollower) => {
-        setRemoveFollowerInput(true)
-        setDisplayFollowers(prevDisplayFollowers => prevDisplayFollowers.filter(follower => follower !== removeFollower))
+    const handleRemoveFollowing = (removeFollowing) => {
+        setRemoveFollowingInput(true)
+        setDisplayFollowings(prevDisplayFollowings => prevDisplayFollowings.filter(following => following !== removeFollowing))
 
-        console.log('removeFollower: ', removeFollower)
+        console.log('removeFollowing: ', removeFollowing)
 
-        const removeFollowersCopy = [
-            ...removeFollowers,
-            removeFollower,
+        const removeFollowingsCopy = [
+            ...removeFollowings,
+            removeFollowing,
         ]
 
-        console.log('removeFollowersCopy: ', removeFollowersCopy)
-        setRemoveFollowers(removeFollowersCopy)
+        console.log('removeFollowingsCopy: ', removeFollowingsCopy)
+        setRemoveFollowings(removeFollowingsCopy)
     }
 
     const onMutate = (e) => {
@@ -129,7 +126,7 @@ function Profile() {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
 
@@ -146,9 +143,9 @@ function Profile() {
                 });
         }
 
-        if (removeFollowerInput) {
-            console.log('removeTags: ', removeFollowers)
-            axios.post('http://localhost:39114/user/unfollow_user', { followersList: removeFollowers }, config)
+        if (removeFollowingInput) {
+            console.log('removeTags: ', removeFollowings)
+            axios.post('http://localhost:39114/user/unfollow_user', { followingsList: removeFollowings }, config)
                 .then((response) => {
                     console.log('Response from http://localhost:39114/user/unfollow_user: ', response.data)
                 })
@@ -175,8 +172,8 @@ function Profile() {
         setRemoveTags([])
         setRemoveTagInput(false)
 
-        setRemoveFollowers([])
-        setRemoveFollowerInput(false)
+        setRemoveFollowings([])
+        setRemoveFollowingInput(false)
     };
 
     return (
@@ -287,12 +284,12 @@ function Profile() {
                             }
                         </>
 
-                        {/* Following */}
+                        {/* Follower */}
                         <Form.Group className="mb-3" controlId="tags">
-                            <Form.Label>Following </Form.Label>
+                            <Form.Label>Follower </Form.Label>
                             <Stack direction="horizontal" gap={2} >
-                                {profile.following && profile.following.length > 0
-                                    ? profile.following.map((user) => (
+                                {profile.follower && profile.follower.length > 0
+                                    ? profile.follower.map((user) => (
                                         <Badge bg="primary">
                                             {user}
                                         </Badge>
@@ -306,17 +303,17 @@ function Profile() {
                             </Stack>
                         </Form.Group>
 
-                        {/* Follower */}
+                        {/* Following */}
                         <Form.Group className="mb-3" controlId="tags">
-                            <Form.Label>Follower </Form.Label>
+                            <Form.Label>Following </Form.Label>
                             <Stack direction="horizontal" gap={2}>
-                                {displayFollowers
-                                    && displayFollowers.length > 0
-                                    ? (displayFollowers.map((user) => (
+                                {displayFollowings
+                                    && displayFollowings.length > 0
+                                    ? (displayFollowings.map((user) => (
                                         <Badge bg="primary">
                                             {user}
                                             <X
-                                                onClick={() => { handleRemoveFollower(user) }}
+                                                onClick={() => { handleRemoveFollowing(user) }}
                                                 style={{
                                                     cursor: 'pointer',
                                                     transition: 'transform 0.3s', // Add transition for the icon

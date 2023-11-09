@@ -6,26 +6,21 @@ import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import { toast } from 'react-toastify';
 
-function FeedItem({ post }) {
-    const { getAccessTokenFromContext, getProfileFromContext, setProfileForContext } = useContext(UserContext);
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
-
+function FeedItem({ post, currentUserProfile }) {
+    const { getAccessTokenFromContext } = useContext(UserContext);
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
-    const [followed, setFollowed] = useState(false);
-    const [displayButton, setDisplayFollowButton] = useState(true);
-
+    // eslint-disable-next-line
+    const [displayButton, setDisplayFollowButton] = useState(currentUserProfile && post.authorEmailId !== currentUserProfile.emailId);
     const navigate = useNavigate()
 
     const handleLikeClick = (e) => {
         e.preventDefault()
 
-        setAccessToken(getAccessTokenFromContext())
-
-        if (accessToken === null) {
+        if (!getAccessTokenFromContext()) {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
@@ -34,10 +29,10 @@ function FeedItem({ post }) {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
-        console.log('accessToken: ', accessToken)
+        console.log('accessToken: ', getAccessTokenFromContext())
         console.log('PostId', post)
         if (liked) { // already liked, set dislike
             axios.post(`http://localhost:39114/user_post/unlike?postId=${post.postId}`, '', config)
@@ -68,18 +63,29 @@ function FeedItem({ post }) {
         });
     };
 
+    const followed = () => {
+        console.log('Following list: ', currentUserProfile.followingList);
+        return currentUserProfile && currentUserProfile.followingList.includes(post.authorEmailId);
+    }
+
     const handleFollow = () => {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
 
-        if (followed) {
+        if (followed()) {
             axios.post(`http://localhost:39114/user/unfollow_user`, { "emailId": post.authorEmailId }, config)
                 .then((response) => {
                     console.log('Unfollow response: ', response);
+                    // setProfile((prevState) => {
+                    //     const newFollowingList = prevState.followingList.filter((emailId) => {
+                    //         return emailId !== post.authorEmailId;
+                    //     });
+                    //     return { ...prevState, followingList: newFollowingList };
+                    // })
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -89,15 +95,16 @@ function FeedItem({ post }) {
             axios.post(`http://localhost:39114/user/follow_user`, { "emailId": post.authorEmailId }, config)
                 .then((response) => {
                     console.log('Follow response: ', response);
+                    // setProfile((prevState) => {
+                    //     const newFollowingList = [...prevState.followingList, post.authorEmailId];
+                    //     return { ...prevState, followingList: newFollowingList };
+                    // })
                 })
                 .catch((error) => {
                     console.error("Error:", error);
                     toast.error('Something went wrong, please try again later');
                 });
         }
-        setFollowed((prevState) => {
-            return !prevState;
-        });
     }
 
     return (
@@ -153,7 +160,7 @@ function FeedItem({ post }) {
                                 <Button
                                     variant='sm btn btn-outline-dark'
                                     onClick={handleFollow}>
-                                    {followed ? 'Unfollow' : 'Follow'}
+                                    {followed() ? 'Unfollow' : 'Follow'}
                                 </Button>
                             )}
                         </div>
