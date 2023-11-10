@@ -112,7 +112,8 @@ function Home() {
     useEffect(() => {
         setLoading(true)
 
-        if (!getAccessTokenFromContext()) {
+        console.log('accessToken: ', getAccessTokenFromContext())
+        if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;

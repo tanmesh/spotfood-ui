@@ -12,7 +12,6 @@ import Loading from '../shared/Loading';
 
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(UserContext);
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
     const [geolocationEnabled, setGeolocationEnabled] = useState(true);
     const [address, setAddress] = useState('')
     const [imgFile, setImgFile] = useState(null)
@@ -21,10 +20,10 @@ function CreatePost() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        setAccessToken(getAccessTokenFromContext())
         setLoading(true)
-        console.log('accessToken: ', accessToken)
-        if (accessToken === 'null') {
+        
+        console.log('accessToken: ', getAccessTokenFromContext())
+        if (getAccessTokenFromContext() == 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
@@ -49,7 +48,7 @@ function CreatePost() {
         );
 
         setLoading(false)
-    }, [accessToken, getAccessTokenFromContext])
+    }, [])
 
     const [formData, setFormData] = useState({
         tagList: [],
@@ -167,13 +166,13 @@ function CreatePost() {
             imgUrl,
         }
 
-        console.log('Access token: ', accessToken)
+        console.log('Access token: ', getAccessTokenFromContext())
         console.log('formDataCopy: ', formDataCopy)
 
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
 

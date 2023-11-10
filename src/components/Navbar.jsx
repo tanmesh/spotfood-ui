@@ -9,18 +9,20 @@ import React, { useState, useContext } from 'react'
 function Navbar() {
     const navigate = useNavigate()
     const { getAccessTokenFromContext, setAccessTokenForContext } = useContext(UserContext);
-    // eslint-disable-next-line
-    const [accessToken, setAccessToken] = useState(getAccessTokenFromContext());
+    const [results, setResults] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchItem, setSearchItem] = useState("");
+    const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
     const location = useLocation();
 
     // Handling logout 
     const handleLogout = () => {
-        console.log(accessToken);
+        console.log(getAccessTokenFromContext());
 
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': accessToken,
+                'x-access-token': getAccessTokenFromContext(),
             },
         };
 
@@ -70,11 +72,6 @@ function Navbar() {
                 });
         });
     };
-
-    const [results, setResults] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchItem, setSearchItem] = useState("");
-    const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
 
     const handleInputChange = (e) => {
         const searchItemValue = e.target.value;

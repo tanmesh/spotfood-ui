@@ -30,7 +30,7 @@ function MyPost() {
     useEffect(() => {
         setLoading(true)
 
-        if (!getAccessTokenFromContext()) {
+        if (getAccessTokenFromContext()==='null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
