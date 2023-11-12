@@ -4,7 +4,7 @@ import cat from '../assets/no-post-yet.jpg'
 
 function NoPost() {
     return (
-        <div className='cardDiv d-flex justify-content-end'>
+        <div className='cardDiv d-flex justify-content-center'>
             <Card
                 border="border-dark"
                 className='card text-center'>

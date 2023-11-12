@@ -1,16 +1,13 @@
 import { toast } from 'react-toastify'
-import { Col, Row } from 'react-bootstrap'
 import { TagsInput } from "react-tag-input-component";
 import UserContext from '../context/user/UserContext'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
 import FeedItem from '../components/FeedItem'
-import Button from 'react-bootstrap/Button';
+import { Button, Col, Row, Modal, Form } from 'react-bootstrap';
 import Spinner from '../shared/Loading'
 import React, { useContext, useEffect, useState } from 'react'
 import NoPost from '../components/NoPost'
-
-import Form from 'react-bootstrap/Form';
 import RangeSlider from 'react-bootstrap-range-slider';
 
 function Explore() {
@@ -23,6 +20,10 @@ function Explore() {
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
     const [selectedNewTags, setSelectedNewTags] = useState([]);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const enableLocation = () => {
         // use current location
@@ -65,7 +66,7 @@ function Explore() {
                 'x-access-token': getAccessTokenFromContext(),
             },
         };
-        axios.post(`http://localhost:39114/search/nearby`, body, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
                 setUserposts([...response.data])
@@ -99,7 +100,7 @@ function Explore() {
                 'x-access-token': getAccessTokenFromContext(),
             },
         };
-        axios.post(`http://localhost:39114/search/nearby`, body, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
                 setUserposts([...response.data])
@@ -128,7 +129,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/explore/${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}`, config)
                 .then((response) => {
                     console.log('response.data: ', response.data)
                     setLastFetched(lastFetched + 2)
@@ -157,7 +158,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/explore/${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])
@@ -180,11 +181,81 @@ function Explore() {
             <Row>
                 <Navbar />
             </Row>
-            <Row style={{ marginTop: '7rem' }}>
-                <Col xs={7} className='p-0 m-0'>
-                    <Row className="m-0" style={{ marginTop: "7rem" }}>
-                        <main>
-                            <ul className='m-0 p-0'>
+            <Row>
+                <div className='fixed-top'
+                    style={{
+                        display: 'flex', justifyContent: 'center',
+                        position: 'fixed', width: '100%', gap: '2rem',
+                        marginTop: window.innerWidth <= 800 ? '6rem' : '5rem',
+                    }}>
+                    <Button
+                        onClick={handleShow}>
+                        Add filter
+                    </Button>
+                    <Button
+                        className='xs-1'
+                        onClick={handleClearFilter}>
+                        Clear filter
+                    </Button>
+                    <Modal show={show} onHide={handleClose}>
+                        <Modal.Body>
+                            <div>
+                                <Form style={{ marginBottom: '2rem' }}>
+                                    <div>
+                                        <Form.Group>
+                                            <Form.Label>
+                                                Range
+                                            </Form.Label>
+                                            <RangeSlider
+                                                value={radius}
+                                                onChange={handleRange}
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            className='xs'
+                                            onClick={handleRangeFilter}>
+                                            Add range filter
+                                        </Button>
+                                    </div>
+                                </Form>
+                            </div>
+                            <div>
+                                <Form style={{ marginBottom: '2rem' }}>
+                                    <div>
+                                        <Form.Group className="mb-3" controlId="tags">
+                                            <TagsInput
+                                                value={selectedNewTags}
+                                                onChange={setSelectedNewTags}
+                                                name="tags"
+                                                placeHolder="Enter tag"
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            className='xs-1'
+                                            onClick={handleTagFilter}>
+                                            Add tag filter
+                                        </Button>
+                                    </div>
+                                </Form>
+                            </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </div>
+            </Row>
+            <Row style={{ marginTop: '8rem' }}>
+                <Col>
+                    <Row>
+                        <main style={{ paddingRight: '0' }}>
+                            <ul className='p-2'>
                                 {userposts.map((post) => (
                                     <FeedItem
                                         key={post.postId}
@@ -194,7 +265,7 @@ function Explore() {
 
                             {userposts.length !== 0
                                 ? (
-                                    <div className="d-flex mt-3 justify-content-end" style={{ marginRight: '9rem' }}>
+                                    <div className="d-flex justify-content-center">
                                         <Button
                                             variant="btn btn btn-outline-dark"
                                             onClick={handleLoadMore}>
@@ -207,70 +278,6 @@ function Explore() {
                                 )}
                         </main>
                     </Row>
-                </Col>
-                <Col xs={5}>
-                    <Row className='mb-2'>
-                        <div
-                            style={{
-                                marginTop: '5rem',
-                                position: 'fixed',
-                                justifyContent: 'center',
-                                alignContent: 'center',
-                                width: '15%'
-                            }}>
-                            <Form style={{ marginBottom: '2rem' }}>
-                                <Col xs="auto">
-                                    <Form.Group>
-                                        <Form.Label>
-                                            Range
-                                        </Form.Label>
-                                        <RangeSlider
-                                            value={radius}
-                                            onChange={handleRange}
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs'
-                                        onClick={handleRangeFilter}>
-                                        Add range filter
-                                    </Button>
-                                </Col>
-                            </Form>
-
-                            <Form style={{ marginBottom: '2rem' }}>
-                                <Col xs="auto">
-                                    <Form.Group className="mb-3" controlId="tags">
-                                        <TagsInput
-                                            value={selectedNewTags}
-                                            onChange={setSelectedNewTags}
-                                            name="tags"
-                                            placeHolder="Enter tag"
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs-1'
-                                        onClick={handleTagFilter}>
-                                        Add tag filter
-                                    </Button>
-                                </Col>
-                            </Form>
-
-                            <Form>
-                                <Col xs="auto">
-                                    <Button
-                                        className='xs-1'
-                                        onClick={handleClearFilter}>
-                                        Clear filter
-                                    </Button>
-                                </Col>
-                            </Form>
-                        </div>
-                    </Row>
-
                 </Col>
             </Row >
         </>

@@ -44,9 +44,9 @@ function MyPost() {
                 },
             };
 
-            axios.get('http://localhost:39114/user/profile', config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
                 .then((response) => {
-                    console.log('Response from http://localhost:39114/user/profile: ', response.data)
+                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
                     setProfile(response.data)
                     fetchFeed(response.data.emailId)
                 })
@@ -73,7 +73,7 @@ function MyPost() {
                     },
                 };
 
-                axios.get(`http://localhost:39114/user_post/get_user_posts?authorEmailId=${emailId}&lastFetched=-1`, config)
+                axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts?authorEmailId=${emailId}&lastFetched=-1`, config)
                     .then((response) => {
                         console.log('response.data: ', response.data)
                         setLastFetched(lastFetched + 2)
@@ -107,7 +107,7 @@ function MyPost() {
                 },
             };
 
-            axios.get(`http://localhost:39114/user_post/get_user_posts?authorEmailId=${profile.emailId}&lastFetched=${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts?authorEmailId=${profile.emailId}&lastFetched=${lastFetched}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])

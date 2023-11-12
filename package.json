@@ -27,6 +27,7 @@
     "react-bootstrap-range-slider": "^3.0.8",
     "react-bootstrap-typeahead": "^6.3.2",
     "react-dom": "^18.2.0",
+    "react-modal": "^3.16.1",
     "react-router-dom": "^6.17.0",
     "react-scripts": "5.0.1",
     "react-tag-input": "^6.8.1",
@@ -39,7 +40,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start:dev": "cp .env.development .env && react-scripts start",
+    "start:prod": "cp .env.production .env && react-scripts start",
+    "build:dev": "cp .env.development .env && react-scripts build",
+    "build:prod": "cp .env.production .env && react-scripts build"
   },
   "eslintConfig": {
     "extends": [

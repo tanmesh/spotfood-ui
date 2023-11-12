@@ -18,7 +18,7 @@ function App() {
     <UserProvider>
       <Router>
         <div>
-          <>
+          <div>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
@@ -29,7 +29,7 @@ function App() {
               <Route path="/explore" element={<Explore />} />
               <Route path='/my-posts' element={<MyPost />} />
             </Routes>
-          </>
+          </div>
           <Footer />
         </div>
       </Router>

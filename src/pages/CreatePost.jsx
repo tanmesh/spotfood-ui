@@ -176,7 +176,7 @@ function CreatePost() {
             },
         };
 
-        axios.post('http://localhost:39114/user_post/add', formDataCopy, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/user_post/add`, formDataCopy, config)
             .then((response) => {
                 console.log(response.data);
                 toast.success('Upload successful!')

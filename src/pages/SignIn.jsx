@@ -27,8 +27,9 @@ function SignIn() {
             emailId,
             password
         };
+        console.log('process.env.REACT_APP_API_URL: ', process.env.REACT_APP_API_URL)
 
-        axios.post('http://localhost:39114/user/login', userData, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/user/login`, userData, config)
             .then((response) => {
                 console.log(response.data);
                 setAccessTokenForContext(response.data.accessToken)

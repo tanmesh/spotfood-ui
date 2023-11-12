@@ -57,9 +57,9 @@ function Profile() {
                 },
             };
 
-            axios.get('http://localhost:39114/user/profile', config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
                 .then((response) => {
-                    console.log('Response from http://localhost:39114/user/profile: ', response.data)
+                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
                     setProfile(response.data)
                     setDisplayTags(response.data.tagList)
                     setDisplayFollowings(response.data.followingList)
@@ -132,9 +132,9 @@ function Profile() {
 
         if (removeTagInput) {
             console.log('removeTags: ', removeTags)
-            axios.post('http://localhost:39114/user/unfollow_tag', { tagList: removeTags }, config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_tag`, { tagList: removeTags }, config)
                 .then((response) => {
-                    console.log('Response from http://localhost:39114/user/unfollow_tag: ', response.data)
+                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/unfollow_tag: ', response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -145,9 +145,9 @@ function Profile() {
 
         if (removeFollowingInput) {
             console.log('removeTags: ', removeFollowings)
-            axios.post('http://localhost:39114/user/unfollow_user', { followingsList: removeFollowings }, config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_user`, { followingsList: removeFollowings }, config)
                 .then((response) => {
-                    console.log('Response from http://localhost:39114/user/unfollow_user: ', response.data)
+                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/unfollow_user: ', response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -157,9 +157,9 @@ function Profile() {
         }
 
         console.log(profileData)
-        axios.post('http://localhost:39114/user/edit', profileData, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/user/edit`, profileData, config)
             .then((response) => {
-                console.log('Response from http://localhost:39114/user/edit: ', response.data)
+                console.log('Response from ${process.env.REACT_APP_API_URL}/user/edit: ', response.data)
                 setDisplayTags(response.data.tagList)
                 toast.success('Profile updated successfully!')
             })

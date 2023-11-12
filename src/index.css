@@ -12,7 +12,7 @@ body {
 
 p {
   font-size: 14px;
-  @media (max-width: 800px) {
+  @media (min-width: 800px) {
     font-size: 12px;
   }
 }
@@ -49,8 +49,8 @@ p {
 }
 
 .card {
-  margin-bottom: 2rem;
-  width: 40%;
+  width: 20%;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 1000px) {
     width: 60%
@@ -62,10 +62,8 @@ p {
 }
 
 .cardDiv {
-  display: flex;
-  /* justify-content: center !important; */
-  align-items: center;
   margin-bottom: 1rem;
+  width: 100%;
 
   /* @media (max-width: 800px) {
     width: 300px;

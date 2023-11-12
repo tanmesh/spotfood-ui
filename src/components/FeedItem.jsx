@@ -36,7 +36,7 @@ function FeedItem({ post, currentUserProfile }) {
         console.log('accessToken: ', getAccessTokenFromContext())
         console.log('PostId', post)
         if (liked) { // already liked, set dislike
-            axios.post(`http://localhost:39114/user_post/unlike?postId=${post.postId}`, '', config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user_post/unlike?postId=${post.postId}`, '', config)
                 .then((response) => {
                     console.log('Unlike response: ', response);
                 })
@@ -45,7 +45,7 @@ function FeedItem({ post, currentUserProfile }) {
                     navigate('/sign-in')
                 });
         } else {
-            axios.post(`http://localhost:39114/user_post/like?postId=${post.postId}`, '', config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user_post/like?postId=${post.postId}`, '', config)
                 .then((response) => {
                     console.log('Like response: ', response);
                 })
@@ -77,7 +77,7 @@ function FeedItem({ post, currentUserProfile }) {
         };
 
         if (followed()) {
-            axios.post(`http://localhost:39114/user/unfollow_user`, { "followingList": [post.authorEmailId] }, config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Unfollow response: ', response);
                     if (Profiler) {
@@ -95,7 +95,7 @@ function FeedItem({ post, currentUserProfile }) {
                     toast.error('Something went wrong, please try again later');
                 });
         } else {
-            axios.post(`http://localhost:39114/user/follow_user`, { "followingList": [post.authorEmailId] }, config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user/follow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Follow response: ', response);
                     if (profile) {
@@ -113,7 +113,7 @@ function FeedItem({ post, currentUserProfile }) {
     }
 
     return (
-        <div className='cardDiv d-flex justify-content-end'>
+        <div className='cardDiv d-flex justify-content-center'>
             <Card
                 border="border-dark"
                 className='card text-center'>

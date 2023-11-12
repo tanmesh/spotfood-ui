@@ -32,7 +32,7 @@ function SignUp() {
             },
         };
 
-        axios.post('http://localhost:39114/user/signup', formData, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/user/signup`, formData, config)
             .then((response) => {
                 console.log(response.data);
                 toast.success('Signup successful!')
