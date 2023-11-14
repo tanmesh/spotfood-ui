@@ -1,9 +1,8 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import UserContext from '../context/user/UserContext';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 import { X } from 'react-bootstrap-icons';
 

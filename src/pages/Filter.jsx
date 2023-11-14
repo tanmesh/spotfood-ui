@@ -1,14 +1,14 @@
-import { Button, Form, Modal } from 'react-bootstrap'
-import React from 'react'
-import RangeSlider from 'react-bootstrap-range-slider';
+import { Button, Form, Modal, Spinner, ListGroup } from 'react-bootstrap'
 import { TagsInput } from "react-tag-input-component";
 import { useState, useContext } from 'react';
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import React from 'react'
+import RangeSlider from 'react-bootstrap-range-slider';
 import UserContext from '../context/user/UserContext'
 import UserPostsContext from '../context/userPosts/UserPostsContext'
 
-function Filter({coords, geolocationEnabled}) {
+function Filter({ coords, geolocationEnabled }) {
     const { getAccessTokenFromContext } = useContext(UserContext);
     const { setUserPostsForContext } = useContext(UserPostsContext);
     const [radius, setRadius] = useState(1);

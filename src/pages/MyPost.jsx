@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Col, Row } from 'react-bootstrap'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
-import { Col, Row } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button';
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
@@ -30,7 +30,7 @@ function MyPost() {
     useEffect(() => {
         setLoading(true)
 
-        if (getAccessTokenFromContext()==='null') {
+        if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
@@ -73,7 +73,7 @@ function MyPost() {
                     },
                 };
 
-                axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts?authorEmailId=${emailId}&lastFetched=-1`, config)
+                axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts/${lastFetched}?authorEmailId=${emailId}`, config)
                     .then((response) => {
                         console.log('response.data: ', response.data)
                         setLastFetched(lastFetched + 2)
@@ -93,7 +93,7 @@ function MyPost() {
                 setLoading(false);
                 toast.error('An unexpected error occurred. Please try again.');
             }
-        }        
+        }
 
         setLoading(false)
     }, [])
@@ -107,7 +107,7 @@ function MyPost() {
                 },
             };
 
-            axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts?authorEmailId=${profile.emailId}&lastFetched=${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts/${lastFetched}?authorEmailId=${profile.emailId}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])
@@ -130,9 +130,17 @@ function MyPost() {
                 <Navbar />
             </Row>
             <Row style={{ marginTop: '5rem' }}>
-                <h3 style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>My Posts</h3>
+                <h3 style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center'
+                }}>
+                    My Posts
+                </h3>
             </Row>
-            <Row style={{ marginTop: '2rem', marginLeft: '20rem', marginRight: '20rem' }}>
+            <Row style={{
+                marginTop: '2rem',
+            }}>
                 <Col className='p-0 m-0'>
                     <Row className="m-0" style={{ marginTop: "7rem" }}>
                         <main>

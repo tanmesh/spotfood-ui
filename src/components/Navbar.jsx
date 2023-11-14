@@ -1,19 +1,32 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { toast } from 'react-toastify';
-import { Col, Row, Spinner } from 'react-bootstrap'
+import { Form, Dropdown, Button, ButtonGroup, ListGroup, Col, Row, Spinner, Modal } from 'react-bootstrap';
+import { ReactComponent as ExploreIcon } from '../assets/svg/exploreIcon.svg'
+import { ReactComponent as HomeIcon } from '../assets/svg/homeIcon.svg'
+import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
+import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
-import { Form, Dropdown, Button, ButtonGroup, ListGroup } from 'react-bootstrap';
+import RangeSlider from 'react-bootstrap-range-slider';
 import UserContext from '../context/user/UserContext';
+import UserPostsContext from '../context/userPosts/UserPostsContext';
 import React, { useState, useContext } from 'react'
 
-function Navbar() {
+function Navbar({ coords, geolocationEnabled }) {
     const navigate = useNavigate()
+    const { setUserPostsForContext } = useContext(UserPostsContext);
     const { getAccessTokenFromContext, setAccessTokenForContext } = useContext(UserContext);
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchItem, setSearchItem] = useState("");
     const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
     const location = useLocation();
+
+    const [radius, setRadius] = useState(1);
+    const [selectedNewTags, setSelectedNewTags] = useState([]);
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     // Handling logout 
     const handleLogout = () => {
@@ -98,6 +111,88 @@ function Navbar() {
         setResults([]);
     };
 
+    const handleSubmit = (e) => {
+        console.log('searchItem: ', searchItem)
+    }
+
+    const handleRange = (e) => {
+        const radius = e.target.value
+        setRadius(radius)
+        console.log('Range selected: ', radius)
+    }
+
+    const handleTagFilter = () => {
+        console.log('selectedNewTags: ', selectedNewTags)
+        const body = {
+            "type": "TAG",
+            "tag": selectedNewTags,
+        }
+
+        console.log('body: ', body)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setUserPostsForContext([...response.data])
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
+
+    const handleRangeFilter = () => {
+        if (!geolocationEnabled) {
+            toast.error('Enable location to filter posts')
+            return;
+        }
+
+        console.log('coord: ', coords)
+
+        const body = {
+            "type": "LOCALITY",
+            "latitude": coords.latitude,
+            "longitude": coords.longitude,
+            "radius": radius,
+        }
+
+        console.log('body: ', body)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setUserPostsForContext([...response.data])
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
+
+    const handleClearFilter = (e) => {
+        e.preventDefault()
+        setSelectedNewTags([])
+        setRadius(1)
+
+        window.location.reload();
+    }
+
+    const isMobile = () => {
+        return window.innerWidth <= 800;
+    }
+
     return (
         <div className='navbar mb-3 fixed-top'>
             <div
@@ -116,7 +211,7 @@ function Navbar() {
                                 onChange={handleInputChange}
                                 value={searchItem}
                                 placeHolder="Search for tags, restaurants, users..."
-                                style={{ width: window.innerWidth <= 800 ? '150px' : '300px' }}
+                                style={{ width: isMobile() ? '150px' : '300px' }}
                             />
                             <ListGroup className="typeahead-list-group">
                                 {!isSearchItemSelected &&
@@ -139,30 +234,113 @@ function Navbar() {
                     </Col>
                     <Col xs="auto m-0">
                         <Button
-                            variant="btn btn-outline-dark"
-                            type="submit">
+                            variant="btn btn-outline-dark sm"
+
+                            onClick={handleSubmit}>
                             Submit
                         </Button>
                     </Col>
                 </Row>
             </Form>
-            <div style={{marginTop: '0.5rem'}}>
-                <ul className='navbarList p-0 mb-0'>
+            <div
+                style={{
+                    marginTop: '0.5rem',
+                }}>
+                {/* display: 'flex',
+                    justifyContent: 'end',
+                    width: '100%', */}
+                <ul className='navbarList p-0 mb-0 me-0'>
+                    {(isActive('/') || isActive('/explore')) && (
+                        <li>
+                            <Button
+                                variant="btn btn-outline-primary btn-sm"
+                                style={{ padding: isMobile() ? '0.22rem' : '0.5rem' }}
+                                onClick={handleShow}>
+                                Add filter
+                            </Button>
+                        </li>
+                    )}
+                    {(isActive('/') || isActive('/explore')) && (
+                        <li>
+                            <Button
+                                variant="btn btn-outline-primary btn-sm"
+                                style={{ padding: isMobile() ? '0.22rem' : '0.5rem' }}
+                                onClick={handleClearFilter}>
+                                Clear filter
+                            </Button>
+                            <Modal show={show} onHide={handleClose}>
+                                <Modal.Body>
+                                    <div>
+                                        <Form style={{ marginBottom: '2rem' }}>
+                                            <div>
+                                                <Form.Group>
+                                                    <Form.Label>
+                                                        Range
+                                                    </Form.Label>
+                                                    <RangeSlider
+                                                        value={radius}
+                                                        onChange={handleRange}
+                                                    />
+                                                </Form.Group>
+                                            </div>
+                                            <div>
+                                                <Button
+                                                    className='sm'
+                                                    onClick={handleRangeFilter}
+                                                    style={{ marginRight: '1rem' }}>
+                                                    Add range filter
+                                                </Button>
+                                                <Button
+                                                    className='sm'
+                                                    onClick={() => { setRadius(0) }}>
+                                                    Clear filter
+                                                </Button>
+                                            </div>
+                                        </Form>
+                                    </div>
+                                    <div>
+                                        <Form style={{ marginBottom: '2rem' }}>
+                                            <div>
+                                                <Form.Group className="mb-3" controlId="tags">
+                                                    <TagsInput
+                                                        value={selectedNewTags}
+                                                        onChange={setSelectedNewTags}
+                                                        name="tags"
+                                                        placeHolder="Enter tag"
+                                                    />
+                                                </Form.Group>
+                                            </div>
+                                            <div>
+                                                <Button
+                                                    className='xs-1'
+                                                    onClick={handleTagFilter}
+                                                    style={{ marginRight: '1rem' }}>
+                                                    Add tag filter
+                                                </Button>
+                                                <Button
+                                                    className='xs'
+                                                    onClick={() => { setSelectedNewTags([]) }}>
+                                                    Clear filter
+                                                </Button>
+                                            </div>
+                                        </Form>
+                                    </div>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </li>
+                    )}
                     <li>
                         <ButtonGroup>
                             <Button
                                 onClick={() => navigate('/')}
                                 variant={isActive('/') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                <div>
-                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-house-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z" />
-                                    <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z" />
-                                </svg>
-                                {' '} */}
-                                    Home
-                                </div>
+                                <HomeIcon fill={isActive('/') ? '#ffffff' : '#00000'} />
+                                {isMobile() ? '' : 'Home'}
                             </Button>
                         </ButtonGroup>
                     </li>
@@ -172,7 +350,8 @@ function Navbar() {
                             <Button
                                 onClick={() => navigate('/explore')}
                                 variant={isActive('/explore') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                Explore
+                                <ExploreIcon fill={isActive('/explore') ? '#ffffff' : '#00000'} />
+                                {isMobile() ? '' : 'Explore'}
                             </Button>
                         </ButtonGroup>
                     </li>
@@ -182,7 +361,8 @@ function Navbar() {
                             <Button
                                 onClick={() => navigate('/add-post')}
                                 variant={isActive('/add-post') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                Add new post
+                                <EditIcon fill={isActive('/add-post') ? '#ffffff' : '#00000'} />
+                                {isMobile() ? '' : 'Add new post'}
                             </Button>
                         </ButtonGroup>
                     </li>

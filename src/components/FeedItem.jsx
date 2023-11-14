@@ -1,20 +1,20 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import UserContext from '../context/user/UserContext';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useContext, Profiler, useEffect } from 'react'
-import { toast } from 'react-toastify';
+import React, { useState, useContext, Profiler } from 'react'
 
 function FeedItem({ post, currentUserProfile }) {
     const { getAccessTokenFromContext } = useContext(UserContext);
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
     // eslint-disable-next-line
-    const [displayButton, setDisplayFollowButton] = useState(typeof(currentUserProfile) !== 'undefined' && post.authorEmailId !== currentUserProfile.emailId);
+    const [displayButton, setDisplayFollowButton] = useState(typeof (currentUserProfile) !== 'undefined' && post.authorEmailId !== currentUserProfile.emailId);
     const [profile, setProfile] = useState(currentUserProfile);
     const navigate = useNavigate()
 

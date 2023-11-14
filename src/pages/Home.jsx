@@ -1,16 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { Button, Col, Row } from 'react-bootstrap';
 import UserContext from '../context/user/UserContext'
 import UserPostsContext from '../context/userPosts/UserPostsContext'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
 import FeedItem from '../components/FeedItem'
-import { Button, Col, Row } from 'react-bootstrap';
+import NoPost from '../components/NoPost'
 import Spinner from '../shared/Loading'
 import React, { useContext, useEffect, useState } from 'react'
-import NoPost from '../components/NoPost'
-
-import Filter from './Filter';
 
 function Home() {
     const { getAccessTokenFromContext } = useContext(UserContext);
@@ -19,7 +17,6 @@ function Home() {
     const [lastFetched, setLastFetched] = useState(0)
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     const navigate = useNavigate()
 
@@ -34,21 +31,7 @@ function Home() {
         password: '',
     })
 
-    const handleView = () => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }
-
     useEffect(() => {
-        console.log('${process.env.REACT_APP_API_URL}: ', process.env.REACT_APP_API_URL)
-
-        // handleView()
-
         setLoading(true)
 
         console.log('accessToken: ', getAccessTokenFromContext())
@@ -171,14 +154,12 @@ function Home() {
     return (
         <>
             <Row>
-                <Navbar />
-            </Row>
-            <Row>
-                <Filter
+                <Navbar
                     coords={coords}
-                    geolocationEnabled={geolocationEnabled} />
+                    geolocationEnabled={geolocationEnabled}
+                />
             </Row>
-            <Row style={{ marginTop: '8rem' }}>
+            <Row style={{ marginTop: '5rem' }}>
                 <Col>
                     <Row>
                         <main style={{ paddingRight: '0' }}>

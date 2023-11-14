@@ -1,14 +1,14 @@
 import { toast } from 'react-toastify'
+import { Button, Col, Row } from 'react-bootstrap';
 import UserPostsContext from '../context/userPosts/UserPostsContext'
 import UserContext from '../context/user/UserContext'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
 import FeedItem from '../components/FeedItem'
-import { Button, Col, Row } from 'react-bootstrap';
 import Spinner from '../shared/Loading'
-import React, { useContext, useEffect, useState } from 'react'
 import NoPost from '../components/NoPost'
 import Filter from './Filter';
+import React, { useContext, useEffect, useState } from 'react'
 
 function Explore() {
     const { getAccessTokenFromContext } = useContext(UserContext);
@@ -104,12 +104,10 @@ function Explore() {
     return (
         <>
             <Row>
-                <Navbar />
-            </Row>
-            <Row>
-                <Filter
+                <Navbar
                     coords={coords}
-                    geolocationEnabled={geolocationEnabled} />
+                    geolocationEnabled={geolocationEnabled}
+                />
             </Row>
             <Row style={{ marginTop: '8rem' }}>
                 <Col>

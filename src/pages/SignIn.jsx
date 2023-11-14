@@ -1,16 +1,18 @@
-import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserContext from '../context/user/UserContext'
-import 'react-toastify/dist/ReactToastify.css';
+import eyeIcon from '../assets/svg/eyeIcon.svg'
+import React, { useContext, useState } from 'react'
 
 function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false)
     const { setAccessTokenForContext } = useContext(UserContext)
     const navigate = useNavigate()
 
@@ -68,11 +70,15 @@ function SignIn() {
 
                         <Form.Group className="mb-3" controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="text" // TODO: type="password"
-                                placeholder="Password"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Form.Control
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <img src={eyeIcon} alt='show password' className='showPassword'
+                                    onClick={() => setShowPassword((prevState) => !prevState)} />
+                            </div>
                         </Form.Group>
 
                         <div className="d-flex justify-content-center">

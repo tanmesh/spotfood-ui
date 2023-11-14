@@ -7,8 +7,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import UserContext from '../context/user/UserContext';
 import AWS from 'aws-sdk';
-import React, { useState, useContext, useEffect } from 'react'
 import Loading from '../shared/Loading';
+import React, { useState, useContext, useEffect } from 'react'
 
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(UserContext);
@@ -21,7 +21,7 @@ function CreatePost() {
 
     useEffect(() => {
         setLoading(true)
-        
+
         console.log('accessToken: ', getAccessTokenFromContext())
         if (getAccessTokenFromContext() == 'null') {
             console.log('accessToken is null')

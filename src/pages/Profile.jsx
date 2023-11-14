@@ -177,7 +177,7 @@ function Profile() {
     };
 
     return (
-        <div>
+        <>
             <Navbar />
             <main className='profile'>
                 {/* TODO: add edit option itself on the img */}
@@ -347,7 +347,7 @@ function Profile() {
                     </Form>
                 </div>
             </main>
-        </div>
+        </>
     )
 }
 

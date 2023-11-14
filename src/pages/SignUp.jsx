@@ -5,14 +5,11 @@ import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import eyeIcon from '../assets/svg/eyeIcon.svg'
 import React, { useState } from 'react'
 
-/*
-    TODO:
-        show password
-*/
-
 function SignUp() {
+    const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -108,11 +105,15 @@ function SignUp() {
 
                         <Form.Group className="mb-3" controlId="password">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="text" // TODO: type="password"
-                                placeholder="your password"
-                                onChange={onMutate}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Form.Control
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="your password"
+                                    onChange={onMutate}
+                                />
+                                <img src={eyeIcon} alt='show password' className='showPassword'
+                                    onClick={() => setShowPassword((prevState) => !prevState)} />
+                            </div>
                         </Form.Group>
 
                         <div className="d-flex justify-content-center">
