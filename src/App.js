@@ -12,29 +12,32 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import { ToastContainer } from 'react-toastify';
 import React from "react";
 import MyPost from './pages/MyPost.jsx';
+import { UserPostsProvider } from './context/userPosts/UserPostsContext.jsx';
 
 function App() {
   return (
-    <UserProvider>
-      <Router>
-        <div>
+    <UserPostsProvider>
+      <UserProvider>
+        <Router>
           <div>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/add-post" element={<CreatePost />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path='/my-posts' element={<MyPost />} />
-            </Routes>
+            <div>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/add-post" element={<CreatePost />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path='/my-posts' element={<MyPost />} />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </Router>
-      <ToastContainer />
-    </UserProvider>
+        </Router>
+        <ToastContainer />
+      </UserProvider>
+    </UserPostsProvider>
   );
 }
 

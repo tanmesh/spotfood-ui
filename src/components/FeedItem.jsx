@@ -21,9 +21,9 @@ function FeedItem({ post, currentUserProfile }) {
     const handleLikeClick = (e) => {
         e.preventDefault()
 
-        if (!getAccessTokenFromContext()) {
+        if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
-            navigate('/sign-in')
+            toast.error('Need to Sign In / Log In');
             return;
         }
 
