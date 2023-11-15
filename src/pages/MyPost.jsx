@@ -46,7 +46,7 @@ function MyPost() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
                 .then((response) => {
-                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
+                    console.log('Response from /user/profile: ', response.data)
                     setProfile(response.data)
                     fetchFeed(response.data.emailId)
                 })

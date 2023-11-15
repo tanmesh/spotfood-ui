@@ -60,10 +60,14 @@ function CreatePost() {
 
     // Upload to S3 bucket
     const uploadFile = async (imgFile) => {
-        const S3_BUCKET = "spotfood-images";
+        console.log('imgFile: ', imgFile)
+        const S3_BUCKET = "spotfood-images/location";
         const fileType = '.jpeg';
-        const key = imgFile.name + fileType; // The key or filename for your object in S3
+        const key = imgFile.name.split('.')[0] + fileType; // The key or filename for your object in S3
 
+        console.log('process.env.REACT_APP_AWS_ACCESS_KEY: ', process.env.REACT_APP_AWS_ACCESS_KEY)
+        console.log('process.env.REACT_APP_AWS_SECRET_KEY: ', process.env.REACT_APP_AWS_SECRET_KEY)
+        console.log('REACT_APP_AWS_REGION:', process.env.REACT_APP_AWS_REGION)
         AWS.config.update({
             accessKeyId: `${process.env.REACT_APP_AWS_ACCESS_KEY}`,
             secretAccessKey: `${process.env.REACT_APP_AWS_SECRET_KEY}`,

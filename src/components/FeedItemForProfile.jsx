@@ -1,18 +1,34 @@
-import { Heart, HeartFill } from 'react-bootstrap-icons';
+import { Heart, HeartFill, X } from 'react-bootstrap-icons';
+import { toast } from 'react-toastify';
+import axios from 'axios'
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState } from 'react'
-import { toast } from 'react-toastify';
-import { X } from 'react-bootstrap-icons';
+import React, { useContext } from 'react'
+import UserContext from '../context/user/UserContext';
 
 function FeedItemForProfile({ post }) {
-    const [liked, setLiked] = useState(post.liked);
-    const [likeCnt, setLikeCnt] = useState(post.upVotes);
+    const { getAccessTokenFromContext } = useContext(UserContext);
 
     const handleRemovePost = (postId) => {
         console.log('Clicked to remove postId: ', postId)
-        toast.success('This feature is intentially disabled!')
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+
+        axios.post(`${process.env.REACT_APP_API_URL}/user_post/delete?postId=${post.postId}`, '', config)
+            .then((response) => {
+                console.log('Post deleted: ', response);
+                toast.success('Successfully deleted the post.')
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('Failed to delete the post.')
+            });
     }
 
     return (
@@ -29,10 +45,10 @@ function FeedItemForProfile({ post }) {
                 <Card.Body className='p-0 mt-1 mb-1'>
                     <div className='cardBodyDiv m-0'>
                         <p className='m-0'>
-                            {!liked
+                            {!post.liked
                                 ? <Heart color="black" size={20} className='m-1' />
                                 : <HeartFill color="red" size={20} className='m-1' />}
-                            {likeCnt}
+                            {post.upVotes}
                         </p>
 
                         <Stack direction="horizontal" gap={2}>
@@ -62,16 +78,16 @@ function FeedItemForProfile({ post }) {
                 <X
                     onClick={() => { handleRemovePost(post.postId) }}
                     style={{
-                        fontSize: '3rem', // Adjust the size to your preference
-                        color: 'red', // Change the color to red
+                        fontSize: '3rem',
+                        color: 'red',
                         cursor: 'pointer',
-                        transition: 'transform 0.3s', // Add transition for the icon
+                        transition: 'transform 0.3s',
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
+                        e.currentTarget.style.transform = 'scale(1.3)';
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
+                        e.currentTarget.style.transform = 'scale(1)';
                     }} />
             </div>
         </div>
