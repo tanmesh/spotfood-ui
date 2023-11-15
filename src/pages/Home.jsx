@@ -159,7 +159,7 @@ function Home() {
                     geolocationEnabled={geolocationEnabled}
                 />
             </Row>
-            <Row style={{ marginTop: '5rem' }}>
+            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
                 <Col>
                     <Row>
                         <main style={{ paddingRight: '0' }}>

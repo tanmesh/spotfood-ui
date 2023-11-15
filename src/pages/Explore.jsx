@@ -7,7 +7,6 @@ import axios from 'axios'
 import FeedItem from '../components/FeedItem'
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
-import Filter from './Filter';
 import React, { useContext, useEffect, useState } from 'react'
 
 function Explore() {
@@ -109,7 +108,7 @@ function Explore() {
                     geolocationEnabled={geolocationEnabled}
                 />
             </Row>
-            <Row style={{ marginTop: '8rem' }}>
+            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
                 <Col>
                     <Row>
                         <main style={{ paddingRight: '0' }}>

@@ -194,14 +194,14 @@ function Navbar({ coords, geolocationEnabled }) {
     }
 
     return (
-        <div className='navbar mb-3 fixed-top'>
+        <div className='navbar fixed-top'>
             <div
                 className='title'
                 onClick={handleTitleClick}
                 style={{ cursor: 'pointer' }}>
                 Spotfood
             </div>
-            <Form inline>
+            <Form>
                 <Row>
                     <Col xs="auto">
                         <Form.Group className="typeahead-form-group">
@@ -210,8 +210,8 @@ function Navbar({ coords, geolocationEnabled }) {
                                 autoComplete="off"
                                 onChange={handleInputChange}
                                 value={searchItem}
-                                placeHolder="Search for tags, restaurants, users..."
                                 style={{ width: isMobile() ? '150px' : '300px' }}
+                                placeholder="Search for tags, restaurants, users..."
                             />
                             <ListGroup className="typeahead-list-group">
                                 {!isSearchItemSelected &&

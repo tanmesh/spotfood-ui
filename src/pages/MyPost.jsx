@@ -129,7 +129,7 @@ function MyPost() {
             <Row>
                 <Navbar />
             </Row>
-            <Row style={{ marginTop: '5rem' }}>
+            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
                 <h3 style={{
                     display: 'flex',
                     justifyContent: 'center',

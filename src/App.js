@@ -20,8 +20,8 @@ function App() {
     <UserPostsProvider>
       <UserProvider>
         <Router>
-          <div>
-            <div>
+          <>
+            <div className='mx-auto px-3 pb-12'>
               <Routes>
                 <Route path="/" element={<Home />} exact />
                 <Route path="/profile" element={<Profile />} exact />
@@ -35,7 +35,7 @@ function App() {
               </Routes>
             </div>
             <Footer />
-          </div>
+          </>
         </Router>
         <ToastContainer />
       </UserProvider>
