@@ -338,8 +338,12 @@ function Navbar({ coords, geolocationEnabled }) {
                         <ButtonGroup>
                             <Button
                                 onClick={() => navigate('/')}
-                                variant={isActive('/') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                <HomeIcon fill={isActive('/') ? '#ffffff' : '#00000'} />
+                                variant={isActive('/') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
+                                className="button-icon-color-change">
+                                <HomeIcon
+                                    className="navbarIcon"
+                                    fill={isActive('/') ? '#ffffff' : '#00000'}
+                                    style={{ transition: 'fill 0.3s' }} />
                                 {isMobile() ? '' : 'Home'}
                             </Button>
                         </ButtonGroup>
@@ -349,8 +353,12 @@ function Navbar({ coords, geolocationEnabled }) {
                         <ButtonGroup>
                             <Button
                                 onClick={() => navigate('/explore')}
-                                variant={isActive('/explore') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                <ExploreIcon fill={isActive('/explore') ? '#ffffff' : '#00000'} />
+                                variant={isActive('/explore') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
+                                className="button-icon-color-change">
+                                <ExploreIcon
+                                    className="navbarIcon"
+                                    fill={isActive('/explore') ? '#ffffff' : '#00000'}
+                                    style={{ transition: 'fill 0.3s' }} />
                                 {isMobile() ? '' : 'Explore'}
                             </Button>
                         </ButtonGroup>
@@ -360,8 +368,12 @@ function Navbar({ coords, geolocationEnabled }) {
                         <ButtonGroup>
                             <Button
                                 onClick={() => navigate('/add-post')}
-                                variant={isActive('/add-post') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}>
-                                <EditIcon fill={isActive('/add-post') ? '#ffffff' : '#00000'} />
+                                variant={isActive('/add-post') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
+                                className="button-icon-color-change">
+                                <EditIcon
+                                    className="navbarIcon"
+                                    fill={isActive('/add-post') ? '#ffffff' : '#00000'}
+                                    style={{ transition: 'fill 0.3s' }} />
                                 {isMobile() ? '' : 'Add new post'}
                             </Button>
                         </ButtonGroup>

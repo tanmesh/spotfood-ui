@@ -153,3 +153,7 @@ p {
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
+
+.button-icon-color-change:hover .navbarIcon {
+  fill: #ffffff
+}
