@@ -13,7 +13,7 @@ function SignIn() {
     const [emailId, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false)
-    const { setAccessTokenForContext } = useContext(UserContext)
+    const { setAccessTokenForContext, setEmailIdForContext } = useContext(UserContext)
     const navigate = useNavigate()
 
     const handleSubmit = (e) => {
@@ -35,6 +35,7 @@ function SignIn() {
             .then((response) => {
                 console.log(response.data);
                 setAccessTokenForContext(response.data.accessToken)
+                setEmailIdForContext(response.data.emailId)
                 toast.success('Login successful!')
                 navigate('/')
             })

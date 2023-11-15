@@ -145,7 +145,7 @@ function Profile() {
 
         if (removeFollowingInput) {
             console.log('removeTags: ', removeFollowings)
-            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_user`, { followingsList: removeFollowings }, config)
+            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_user`, { followingList: removeFollowings }, config)
                 .then((response) => {
                     console.log('Response from ${process.env.REACT_APP_API_URL}/user/unfollow_user: ', response.data)
                 })
@@ -225,7 +225,7 @@ function Profile() {
                         <Form.Group className="mb-3" controlId="password">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
-                                type="text" // TODO: type="password"
+                                type="password"
                                 placeholder="Password"
                                 value={profile.password}
                                 // onChange={(e) => setPassword(e.target.value)}

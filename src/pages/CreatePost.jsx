@@ -256,9 +256,6 @@ function CreatePost() {
                                 </Form.Group>
                             )}
 
-                        {/* TODO: 
-                        1. upload from camera
-                        2. multiple uploads */}
                         <Form.Group controlId="encodedImgString" className="mb-3">
                             <Form.Label>Upload </Form.Label>
                             <Form.Control

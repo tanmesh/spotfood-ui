@@ -14,7 +14,7 @@ import React, { useState, useContext } from 'react'
 function Navbar({ coords, geolocationEnabled }) {
     const navigate = useNavigate()
     const { setUserPostsForContext } = useContext(UserPostsContext);
-    const { getAccessTokenFromContext, setAccessTokenForContext } = useContext(UserContext);
+    const { getAccessTokenFromContext, setAccessTokenForContext, setEmailIdForContext } = useContext(UserContext);
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchItem, setSearchItem] = useState("");
@@ -43,6 +43,7 @@ function Navbar({ coords, geolocationEnabled }) {
             .then((response) => {
                 console.log(response.data);
                 setAccessTokenForContext(null)
+                setEmailIdForContext(null)
                 toast.success('Logout successful!')
                 navigate('/sign-in')
             })

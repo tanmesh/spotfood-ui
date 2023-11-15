@@ -10,11 +10,11 @@ import Stack from 'react-bootstrap/Stack';
 import React, { useState, useContext, Profiler } from 'react'
 
 function FeedItem({ post, currentUserProfile }) {
-    const { getAccessTokenFromContext } = useContext(UserContext);
+    const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
     // eslint-disable-next-line
-    const [displayButton, setDisplayFollowButton] = useState(typeof (currentUserProfile) !== 'undefined' && post.authorEmailId !== currentUserProfile.emailId);
+    const [displayButton, setDisplayFollowButton] = useState(currentUserProfile === null || post.authorEmailId !== currentUserProfile.emailId);
     const [profile, setProfile] = useState(currentUserProfile);
     const navigate = useNavigate()
 

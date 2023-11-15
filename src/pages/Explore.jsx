@@ -8,15 +8,28 @@ import FeedItem from '../components/FeedItem'
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
 import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Explore() {
-    const { getAccessTokenFromContext } = useContext(UserContext);
+    const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
 
     const [loading, setLoading] = useState(false);
     const { getUserPostsFromContext, setUserPostsForContext } = useContext(UserPostsContext);
     const [lastFetched, setLastFetched] = useState(0)
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
+    const [profile, setProfile] = useState({
+        emailId: '',
+        firstName: '',
+        lastName: '',
+        followingList: [],
+        followersList: [],
+        tagList: [],
+        nickName: '',
+        password: '',
+    })
+
+    const navigate = useNavigate()
 
     const enableLocation = () => {
         // use current location
@@ -53,7 +66,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}?emailId=${getEmailIdFromContext()}`, config)
                 .then((response) => {
                     console.log('response.data: ', response.data)
                     setLastFetched(lastFetched + 2)
@@ -71,6 +84,25 @@ function Explore() {
         }
         fetchFeed()
 
+        const fetchProfile = async () => {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': getAccessTokenFromContext(),
+                },
+            };
+
+            axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
+                .then((response) => {
+                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
+                    setProfile(response.data)
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+        fetchProfile()
+
         setLoading(false)
     }, [getAccessTokenFromContext])
 
@@ -82,7 +114,7 @@ function Explore() {
                 },
             };
 
-            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}`, config)
+            axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}?emailId=${getEmailIdFromContext()}`, config)
                 .then((response) => {
                     setLastFetched(lastFetched + 2)
                     setUserPostsForContext((prevState) => [...prevState, ...response.data])
@@ -116,7 +148,8 @@ function Explore() {
                                 {getUserPostsFromContext().map((post) => (
                                     <FeedItem
                                         key={post.postId}
-                                        post={post} />
+                                        post={post}
+                                        currentUserProfile={profile} />
                                 ))}
                             </ul>
 
