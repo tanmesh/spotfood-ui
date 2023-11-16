@@ -196,7 +196,8 @@ function Home() {
                                                 >
                                                     Load more
                                                 </Button>
-                                            )}
+                                            )
+                                        }
                                     </div>
                                 )
                                 : (

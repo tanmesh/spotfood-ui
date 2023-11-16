@@ -9,6 +9,7 @@ import NoPost from '../components/NoPost'
 import UserContext from '../context/user/UserContext';
 import React, { useEffect, useState, useContext } from 'react'
 import FeedItemForProfile from '../components/FeedItemForProfile';
+import ThatsAll from '../assets/thats-all.png'
 
 function MyPost() {
     const { getAccessTokenFromContext } = useContext(UserContext);
@@ -16,6 +17,7 @@ function MyPost() {
     const [userposts, setUserposts] = useState([])
     const [lastFetched, setLastFetched] = useState(0)
     const navigate = useNavigate()
+    const [thatsAll, setThatsAll] = useState(false);
     const [profile, setProfile] = useState({
         emailId: '',
         firstName: '',
@@ -109,6 +111,9 @@ function MyPost() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user_post/get_user_posts/${lastFetched}?authorEmailId=${profile.emailId}`, config)
                 .then((response) => {
+                    if (response.data.length === 0) {
+                        setThatsAll(true)
+                    }
                     setLastFetched(lastFetched + 2)
                     setUserposts((prevState) => [...prevState, ...response.data])
                 })
@@ -156,11 +161,22 @@ function MyPost() {
                             {userposts && userposts.length !== 0
                                 ? (
                                     <div className="d-flex mt-3 justify-content-center">
-                                        <Button
-                                            variant="btn btn btn-outline-dark"
-                                            onClick={handleLoadMore}>
-                                            Load more
-                                        </Button>
+                                        {thatsAll
+                                            ? (
+                                                <img
+                                                    width={window.innerWidth <= 800 ? '20%' : '5%'}
+                                                    height={window.innerHeight <= 800 ? '20%' : '5%'}
+                                                    src={ThatsAll}
+                                                />
+                                            )
+                                            : (
+                                                <Button
+                                                    variant="btn btn btn-outline-dark"
+                                                    onClick={handleLoadMore}>
+                                                    Load more
+                                                </Button>
+                                            )
+                                        }
                                     </div>
                                 )
                                 : (
