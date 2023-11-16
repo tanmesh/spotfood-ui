@@ -13,7 +13,7 @@ function FeedItemForProfile({ post }) {
 
     const handleRemovePost = (postId) => {
         setDisplay(false);
-        
+
         console.log('Clicked to remove postId: ', postId)
 
         const config = {
@@ -39,10 +39,10 @@ function FeedItemForProfile({ post }) {
         </>
     }
     return (
-        <div className='cardDiv d-flex justify-content-center'>
+        <div className='cardDiv d-flex justify-content-center position-relative'>
             <Card
                 border="border-dark"
-                className='card text-center'>
+                className='card text-center position-relative'>
                 <Card.Header className='p-0 m-0'>
                     <Card.Img
                         variant="top"
@@ -80,23 +80,23 @@ function FeedItemForProfile({ post }) {
                         )}
                     </div>
                 </Card.Body>
+                <div className="position-absolute top-0 end-0 p-2">
+                    <X
+                        onClick={() => { handleRemovePost(post.postId) }}
+                        style={{
+                            fontSize: '3rem',
+                            color: 'red',
+                            cursor: 'pointer',
+                            transition: 'transform 0.3s',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.3)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }} />
+                </div>
             </Card>
-            <div>
-                <X
-                    onClick={() => { handleRemovePost(post.postId) }}
-                    style={{
-                        fontSize: '3rem',
-                        color: 'red',
-                        cursor: 'pointer',
-                        transition: 'transform 0.3s',
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                    }} />
-            </div>
         </div>
     )
 }
