@@ -13,7 +13,7 @@ import ThatsAll from '../assets/thats-all.png'
 
 function Home() {
     const { getAccessTokenFromContext } = useContext(UserContext);
-    const { getUserPostsFromContext, setUserPostsForContext } = useContext(UserPostsContext);
+    const { getUserPostsFromContext, setUserPostsForContext, setProfileForContext } = useContext(UserPostsContext);
     const [loading, setLoading] = useState(false);
     const [lastFetched, setLastFetched] = useState(0)
     const [coords, setCoords] = useState({});
@@ -22,20 +22,11 @@ function Home() {
 
     const navigate = useNavigate()
 
-    const [profile, setProfile] = useState({
-        emailId: '',
-        firstName: '',
-        lastName: '',
-        followingList: [],
-        followersList: [],
-        tagList: [],
-        nickName: '',
-        password: '',
-    })
-
     useEffect(() => {
         setLoading(true)
 
+        setProfileForContext(null)
+        
         console.log('accessToken: ', getAccessTokenFromContext())
         if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
@@ -113,8 +104,8 @@ function Home() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
                 .then((response) => {
-                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
-                    setProfile(response.data)
+                    console.log('Response from /user/profile: ', response.data)
+                    setProfileForContext(response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -173,8 +164,7 @@ function Home() {
                                 {getUserPostsFromContext().map((post) => (
                                     <FeedItem
                                         key={post.postId}
-                                        post={post}
-                                        currentUserProfile={profile} />
+                                        post={post} />
                                 ))}
                             </ul>
 

@@ -7,15 +7,16 @@ import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useContext, Profiler } from 'react'
+import React, { useState, useContext } from 'react'
+import UserPostsContext from '../context/userPosts/UserPostsContext';
 
-function FeedItem({ post, currentUserProfile }) {
-    const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
+function FeedItem({ post }) {
+    const { getAccessTokenFromContext } = useContext(UserContext);
+    const { getProfileFromContext, setProfileForContext } = useContext(UserPostsContext);
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
     // eslint-disable-next-line
-    const [displayButton, setDisplayFollowButton] = useState(currentUserProfile === null || post.authorEmailId !== currentUserProfile.emailId);
-    const [profile, setProfile] = useState(currentUserProfile);
+    const [displayButton, setDisplayFollowButton] = useState(getProfileFromContext() === null || post.authorEmailId !== getProfileFromContext().emailId);
     const navigate = useNavigate()
 
     const handleLikeClick = (e) => {
@@ -65,7 +66,7 @@ function FeedItem({ post, currentUserProfile }) {
     };
 
     const followed = () => {
-        return !profile || profile.followingList.includes(post.authorEmailId);
+        return getProfileFromContext().followingList.includes(post.authorEmailId);
     }
 
     const handleFollow = () => {
@@ -80,15 +81,12 @@ function FeedItem({ post, currentUserProfile }) {
             axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Unfollow response: ', response);
-                    if (Profiler) {
-                        setProfile((prevState) => {
-                            const newFollowingList = prevState.followingList.filter((emailId) => {
-                                return emailId !== post.authorEmailId;
-                            });
-                            return { ...prevState, followingList: newFollowingList };
-                        })
-                    }
 
+                    let updatedProfile = { ...getProfileFromContext() };
+                    updatedProfile.followingList = updatedProfile.followingList.filter((emailId) => {
+                        return emailId !== post.authorEmailId;
+                    });
+                    setProfileForContext(updatedProfile);
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -98,12 +96,10 @@ function FeedItem({ post, currentUserProfile }) {
             axios.post(`${process.env.REACT_APP_API_URL}/user/follow_user`, { "followingList": [post.authorEmailId] }, config)
                 .then((response) => {
                     console.log('Follow response: ', response);
-                    if (profile) {
-                        setProfile((prevState) => {
-                            const newFollowingList = [...prevState.followingList, post.authorEmailId];
-                            return { ...prevState, followingList: newFollowingList };
-                        })
-                    }
+
+                    let updatedProfile = { ...getProfileFromContext() };
+                    updatedProfile.followingList.push(post.authorEmailId);
+                    setProfileForContext(updatedProfile);
                 })
                 .catch((error) => {
                     console.error("Error:", error);

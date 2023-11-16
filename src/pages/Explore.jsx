@@ -8,29 +8,16 @@ import FeedItem from '../components/FeedItem'
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import ThatsAll from '../assets/thats-all.png'
 
 function Explore() {
     const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
+    const { getUserPostsFromContext, setUserPostsForContext, setProfileForContext } = useContext(UserPostsContext);
     const [thatsAll, setThatsAll] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { getUserPostsFromContext, setUserPostsForContext } = useContext(UserPostsContext);
     const [lastFetched, setLastFetched] = useState(0)
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
-    const [profile, setProfile] = useState({
-        emailId: '',
-        firstName: '',
-        lastName: '',
-        followingList: [],
-        followersList: [],
-        tagList: [],
-        nickName: '',
-        password: '',
-    })
-
-    const navigate = useNavigate()
 
     const enableLocation = () => {
         // use current location
@@ -55,6 +42,8 @@ function Explore() {
     useEffect(() => {
         setLoading(true)
         enableLocation()
+
+        setProfileForContext(null)
 
         console.log('process.env.REACT_APP_API_URL: ', process.env.REACT_APP_API_URL)
 
@@ -95,8 +84,8 @@ function Explore() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user/profile`, config)
                 .then((response) => {
-                    console.log('Response from ${process.env.REACT_APP_API_URL}/user/profile: ', response.data)
-                    setProfile(response.data)
+                    console.log('Response from /user/profile: ', response.data)
+                    setProfileForContext(response.data)
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -117,6 +106,7 @@ function Explore() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}?emailId=${getEmailIdFromContext()}`, config)
                 .then((response) => {
+                    console.log('response.data: ', response.data)
                     if (response.data.length === 0) {
                         setThatsAll(true)
                     }
@@ -152,8 +142,7 @@ function Explore() {
                                 {getUserPostsFromContext().map((post) => (
                                     <FeedItem
                                         key={post.postId}
-                                        post={post}
-                                        currentUserProfile={profile} />
+                                        post={post} />
                                 ))}
                             </ul>
 
