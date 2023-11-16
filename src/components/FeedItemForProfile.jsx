@@ -4,13 +4,16 @@ import axios from 'axios'
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import UserContext from '../context/user/UserContext';
 
 function FeedItemForProfile({ post }) {
+    const [display, setDisplay] = useState(true);
     const { getAccessTokenFromContext } = useContext(UserContext);
 
     const handleRemovePost = (postId) => {
+        setDisplay(false);
+        
         console.log('Clicked to remove postId: ', postId)
 
         const config = {
@@ -31,6 +34,10 @@ function FeedItemForProfile({ post }) {
             });
     }
 
+    if (display === false) {
+        return <>
+        </>
+    }
     return (
         <div className='cardDiv d-flex justify-content-center'>
             <Card

@@ -9,10 +9,11 @@ import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ThatsAll from '../assets/thats-all.png'
 
 function Explore() {
     const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
-
+    const [thatsAll, setThatsAll] = useState(false);
     const [loading, setLoading] = useState(false);
     const { getUserPostsFromContext, setUserPostsForContext } = useContext(UserPostsContext);
     const [lastFetched, setLastFetched] = useState(0)
@@ -116,6 +117,9 @@ function Explore() {
 
             axios.get(`${process.env.REACT_APP_API_URL}/user_post/explore/${lastFetched}?emailId=${getEmailIdFromContext()}`, config)
                 .then((response) => {
+                    if (response.data.length === 0) {
+                        setThatsAll(true)
+                    }
                     setLastFetched(lastFetched + 2)
                     setUserPostsForContext((prevState) => [...prevState, ...response.data])
                 })
@@ -156,16 +160,28 @@ function Explore() {
                             {getUserPostsFromContext().length !== 0
                                 ? (
                                     <div className="d-flex justify-content-center">
-                                        <Button
-                                            variant="btn btn btn-outline-dark"
-                                            onClick={handleLoadMore}>
-                                            Load more
-                                        </Button>
+                                        {thatsAll
+                                            ? (
+                                                <img
+                                                    width={window.innerWidth <= 800 ? '20%' : '5%'}
+                                                    height={window.innerHeight <= 800 ? '20%' : '5%'}
+                                                    src={ThatsAll}
+                                                />
+                                            )
+                                            : (
+                                                <Button
+                                                    variant="outline-dark"
+                                                    onClick={handleLoadMore}
+                                                >
+                                                    Load more
+                                                </Button>
+                                            )}
                                     </div>
                                 )
                                 : (
                                     <NoPost />
-                                )}
+                                )
+                            }
                         </main>
                     </Row>
                 </Col>
