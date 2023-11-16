@@ -19,7 +19,6 @@ p {
 }
 
 .title {
-  margin-left: 1rem;
   font-size: 2rem;
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
@@ -30,7 +29,6 @@ p {
 }
 
 .profile {
-  margin-top: 7rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -3,7 +3,6 @@ import { X, Plus } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
-import Navbar from '../components/Navbar'
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
@@ -178,7 +177,6 @@ function Profile() {
 
     return (
         <>
-            <Navbar />
             <main className='profile'>
                 {/* TODO: add edit option itself on the img */}
                 <img src={profilePicUrl} alt="avatar" style={{

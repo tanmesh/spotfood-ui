@@ -214,8 +214,7 @@ function CreatePost() {
     }
 
     return (
-        <div>
-            <Navbar />
+        <>
             <main className='profile'>
                 {loading && <Loading />}
 
@@ -274,7 +273,7 @@ function CreatePost() {
                     </Form>
                 </div>
             </main>
-        </div>
+        </>
     )
 }
 

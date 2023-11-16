@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Col, Row } from 'react-bootstrap'
 import axios from 'axios'
-import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
@@ -131,18 +130,13 @@ function MyPost() {
 
     return (
         <>
-            <Row>
-                <Navbar />
-            </Row>
-            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
-                <h3 style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignContent: 'center'
-                }}>
-                    My Posts
-                </h3>
-            </Row>
+            <h3 style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignContent: 'center'
+            }}>
+                My Posts
+            </h3>
             <Row style={{
                 marginTop: '2rem',
             }}>

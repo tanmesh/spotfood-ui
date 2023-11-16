@@ -1,12 +1,11 @@
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios'
-import Navbar from '../components/Navbar'
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import eyeIcon from '../assets/svg/eyeIcon.svg'
-import React, { useState } from 'react'
+import eyeIcon from '../assets/svg/eyeIcon.svg';
+import React, { useState } from 'react';
 
 function SignUp() {
     const [showPassword, setShowPassword] = useState(false)
@@ -58,8 +57,7 @@ function SignUp() {
     }
 
     return (
-        <div>
-            <Navbar />
+        <>
             <main className='profile'>
                 <h3>SIGN UP</h3>
                 <div className="profileInfo">
@@ -130,7 +128,7 @@ function SignUp() {
                     </Button>
                 </div>
             </main>
-        </div>
+        </>
     )
 }
 

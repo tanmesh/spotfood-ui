@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import UserContext from '../context/user/UserContext'
 import UserPostsContext from '../context/userPosts/UserPostsContext'
-import Navbar from '../components/Navbar'
 import axios from 'axios'
 import FeedItem from '../components/FeedItem'
 import NoPost from '../components/NoPost'
 import Spinner from '../shared/Loading'
 import React, { useContext, useEffect, useState } from 'react'
 import ThatsAll from '../assets/thats-all.png'
+import Filter from '../components/Filter';
 
 function Home() {
     const { getAccessTokenFromContext } = useContext(UserContext);
@@ -26,7 +26,7 @@ function Home() {
         setLoading(true)
 
         setProfileForContext(null)
-        
+
         console.log('accessToken: ', getAccessTokenFromContext())
         if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
@@ -150,54 +150,46 @@ function Home() {
 
     return (
         <>
-            <Row>
-                <Navbar
-                    coords={coords}
-                    geolocationEnabled={geolocationEnabled}
-                />
-            </Row>
-            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
-                <Col>
-                    <Row>
-                        <main style={{ paddingRight: '0' }}>
-                            <ul className='p-2'>
-                                {getUserPostsFromContext().map((post) => (
-                                    <FeedItem
-                                        key={post.postId}
-                                        post={post} />
-                                ))}
-                            </ul>
+            <Filter
+                coords={coords}
+                geolocationEnabled={geolocationEnabled}
+            />
 
-                            {getUserPostsFromContext() && getUserPostsFromContext().length !== 0
-                                ? (
-                                    <div className="d-flex justify-content-center">
-                                        {thatsAll
-                                            ? (
-                                                <img
-                                                    width={window.innerWidth <= 800 ? '20%' : '5%'}
-                                                    height={window.innerHeight <= 800 ? '20%' : '5%'}
-                                                    src={ThatsAll}
-                                                />
-                                            )
-                                            : (
-                                                <Button
-                                                    variant="outline-dark"
-                                                    onClick={handleLoadMore}
-                                                >
-                                                    Load more
-                                                </Button>
-                                            )
-                                        }
-                                    </div>
-                                )
-                                : (
-                                    <NoPost />
-                                )
-                            }
-                        </main>
-                    </Row>
-                </Col>
-            </Row >
+            <ul className='p-2'>
+                {getUserPostsFromContext().map((post) => (
+                    <FeedItem
+                        key={post.postId}
+                        post={post}
+                    />
+                ))}
+            </ul>
+
+            {getUserPostsFromContext() && getUserPostsFromContext().length !== 0
+                ? (
+                    <div className="d-flex justify-content-center">
+                        {thatsAll
+                            ? (
+                                <img
+                                    width={window.innerWidth <= 800 ? '20%' : '5%'}
+                                    height={window.innerHeight <= 800 ? '20%' : '5%'}
+                                    src={ThatsAll}
+                                />
+                            )
+                            : (
+                                <Button
+                                    variant="outline-dark"
+                                    onClick={handleLoadMore}
+                                >
+                                    Load more
+                                </Button>
+                            )
+                        }
+                    </div>
+                )
+                : (
+                    <NoPost />
+                )
+            }
         </>
     )
 }

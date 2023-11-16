@@ -1,14 +1,14 @@
 import { toast } from 'react-toastify'
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import UserPostsContext from '../context/userPosts/UserPostsContext'
 import UserContext from '../context/user/UserContext'
-import Navbar from '../components/Navbar'
 import axios from 'axios'
 import FeedItem from '../components/FeedItem'
 import Spinner from '../shared/Loading'
 import NoPost from '../components/NoPost'
 import React, { useContext, useEffect, useState } from 'react'
 import ThatsAll from '../assets/thats-all.png'
+import Filter from '../components/Filter';
 
 function Explore() {
     const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
@@ -128,53 +128,47 @@ function Explore() {
 
     return (
         <>
-            <Row>
-                <Navbar
+            <main>
+                <Filter
                     coords={coords}
                     geolocationEnabled={geolocationEnabled}
                 />
-            </Row>
-            <Row style={{ marginTop: window.innerWidth <= 800 ? '7rem' : '5rem' }}>
-                <Col>
-                    <Row>
-                        <main style={{ paddingRight: '0' }}>
-                            <ul className='p-2'>
-                                {getUserPostsFromContext().map((post) => (
-                                    <FeedItem
-                                        key={post.postId}
-                                        post={post} />
-                                ))}
-                            </ul>
 
-                            {getUserPostsFromContext().length !== 0
+                <ul className='p-2'>
+                    {getUserPostsFromContext().map((post) => (
+                        <FeedItem
+                            key={post.postId}
+                            post={post}
+                        />
+                    ))}
+                </ul>
+
+                {getUserPostsFromContext().length !== 0
+                    ? (
+                        <div className="d-flex justify-content-center">
+                            {thatsAll
                                 ? (
-                                    <div className="d-flex justify-content-center">
-                                        {thatsAll
-                                            ? (
-                                                <img
-                                                    width={window.innerWidth <= 800 ? '20%' : '5%'}
-                                                    height={window.innerHeight <= 800 ? '20%' : '5%'}
-                                                    src={ThatsAll}
-                                                />
-                                            )
-                                            : (
-                                                <Button
-                                                    variant="outline-dark"
-                                                    onClick={handleLoadMore}
-                                                >
-                                                    Load more
-                                                </Button>
-                                            )}
-                                    </div>
+                                    <img
+                                        width={window.innerWidth <= 800 ? '20%' : '5%'}
+                                        height={window.innerHeight <= 800 ? '20%' : '5%'}
+                                        src={ThatsAll}
+                                    />
                                 )
                                 : (
-                                    <NoPost />
-                                )
-                            }
-                        </main>
-                    </Row>
-                </Col>
-            </Row >
+                                    <Button
+                                        variant="outline-dark"
+                                        onClick={handleLoadMore}
+                                    >
+                                        Load more
+                                    </Button>
+                                )}
+                        </div>
+                    )
+                    : (
+                        <NoPost />
+                    )
+                }
+            </main>
         </>
     )
 }

@@ -1,11 +1,9 @@
 import React from 'react'
 import Cat404 from '../assets/cat404.jpg'
-import Navbar from '../components/Navbar'
 
 function NoFound() {
     return (
         <>
-            <Navbar />
             <div style={{
                 marginTop: '7rem',
                 display: 'flex',

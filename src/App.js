@@ -14,28 +14,30 @@ import Footer from "./components/Footer.jsx";
 import React from "react";
 import MyPost from './pages/MyPost.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Navbar from './components/Navbar.jsx';
 
 function App() {
   return (
     <UserPostsProvider>
       <UserProvider>
         <Router>
-          <>
-            <div className='mx-auto px-3 pb-12'>
-              <Routes>
-                <Route path="/" element={<Home />} exact />
-                <Route path="/profile" element={<Profile />} exact />
-                <Route path="/about" element={<About />} exact />
-                <Route path="/sign-in" element={<SignIn />} exact />
-                <Route path="/sign-up" element={<SignUp />} exact />
-                <Route path="/add-post" element={<CreatePost />} exact />
-                <Route path="/explore" element={<Explore />} exact />
-                <Route path='/my-posts' element={<MyPost />} exact />
-                <Route path='/*' element={<NotFound />} exact />
-              </Routes>
-            </div>
-            <Footer />
-          </>
+          <Navbar />
+          <div 
+          className='mx-auto px-3 pb-12'
+          style={{marginTop: '6rem'}}>
+            <Routes>
+              <Route path="/" element={<Home />} exact />
+              <Route path="/profile" element={<Profile />} exact />
+              <Route path="/about" element={<About />} exact />
+              <Route path="/sign-in" element={<SignIn />} exact />
+              <Route path="/sign-up" element={<SignUp />} exact />
+              <Route path="/add-post" element={<CreatePost />} exact />
+              <Route path="/explore" element={<Explore />} exact />
+              <Route path='/my-posts' element={<MyPost />} exact />
+              <Route path='/*' element={<NotFound />} exact />
+            </Routes>
+          </div>
+          <Footer />
         </Router>
         <ToastContainer />
       </UserProvider>

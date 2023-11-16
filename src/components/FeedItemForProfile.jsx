@@ -1,15 +1,16 @@
 import { Heart, HeartFill, X } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import axios from 'axios'
-import Badge from 'react-bootstrap/Badge';
-import Card from 'react-bootstrap/Card';
-import Stack from 'react-bootstrap/Stack';
+import {Card, Stack} from 'react-bootstrap';
 import React, { useContext, useState } from 'react'
 import UserContext from '../context/user/UserContext';
+import UserPostsContext from '../context/userPosts/UserPostsContext';
+import TagBadge from './TagBadge';
 
 function FeedItemForProfile({ post }) {
     const [display, setDisplay] = useState(true);
     const { getAccessTokenFromContext } = useContext(UserContext);
+    const { getProfileFromContext, setProfileForContext } = useContext(UserPostsContext);
 
     const handleRemovePost = (postId) => {
         setDisplay(false);
@@ -32,6 +33,47 @@ function FeedItemForProfile({ post }) {
                 console.error("Error:", error);
                 toast.error('Failed to delete the post.')
             });
+    }
+
+    const handleTagClicked = (tag, isFollowed) => {
+        console.log('Clicked tag: ', tag)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+
+        if (isFollowed) {
+            axios.post(`${process.env.REACT_APP_API_URL}/user/unfollow_tag`, { tagList: [tag] }, config)
+                .then((response) => {
+                    console.log('Response from /user/unfollow_tag: ', response.data)
+                    let profile = getProfileFromContext();
+                    profile.tagList = profile.tagList.filter((t) => {
+                        return t !== tag;
+                    });
+                    setProfileForContext(profile);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('Error removing tags!')
+                    return;
+                });
+        } else {
+            axios.post(`${process.env.REACT_APP_API_URL}/user/follow_tag`, { tagList: [tag] }, config)
+                .then((response) => {
+                    console.log('Response from /user/unfollow_tag: ', response.data)
+                    let profile = getProfileFromContext();
+                    profile.tagList.push(tag);
+                    setProfileForContext(profile);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error('Error removing tags!')
+                    return;
+                });
+        }
     }
 
     if (display === false) {
@@ -61,7 +103,12 @@ function FeedItemForProfile({ post }) {
                         <Stack direction="horizontal" gap={2}>
                             <p className='fw-bold m-0'>Tags: </p>
                             {post.tagList.map((tag, index) => (
-                                <Badge key={index} bg="primary">#{tag}</Badge>
+                                <TagBadge
+                                    key={index}
+                                    tag={tag}
+                                    isFollowed={getProfileFromContext().tagList.includes(tag)}
+                                    handleTagClicked={handleTagClicked}
+                                />
                             ))}
                         </Stack>
                     </div>

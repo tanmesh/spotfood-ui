@@ -2,7 +2,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import Navbar from '../components/Navbar'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserContext from '../context/user/UserContext'
@@ -51,8 +50,7 @@ function SignIn() {
     };
 
     return (
-        <div>
-            <Navbar />
+        <>
             <main className='profile'>
                 <h3>SIGN IN</h3>
                 <div className="profileInfo">
@@ -96,7 +94,7 @@ function SignIn() {
                     </Button>
                 </div>
             </main>
-        </div>
+        </>
     )
 }
 

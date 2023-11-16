@@ -1,9 +1,8 @@
-import { Button, Form, Modal, Spinner, ListGroup } from 'react-bootstrap'
+import { Button, Form, Modal } from 'react-bootstrap'
 import { TagsInput } from "react-tag-input-component";
-import { useState, useContext } from 'react';
 import { toast } from 'react-toastify'
 import axios from 'axios'
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import RangeSlider from 'react-bootstrap-range-slider';
 import UserContext from '../context/user/UserContext'
 import UserPostsContext from '../context/userPosts/UserPostsContext'
@@ -93,17 +92,22 @@ function Filter({ coords, geolocationEnabled }) {
     }
 
     return (
-        <div className='fixed-top'
+        <div
             style={{
-                display: 'flex', justifyContent: 'center',
-                position: 'fixed', width: '100%', gap: '2rem',
-                marginTop: window.innerWidth <= 800 ? '6rem' : '5rem',
-            }}>
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                gap: '0.5rem',
+                zIndex: '1',
+                right: '30px',
+            }} >
             <Button
+                size='sm'
                 onClick={handleShow}>
                 Add filter
             </Button>
             <Button
+                size='sm'
                 className='xs-1'
                 onClick={handleClearFilter}>
                 Clear filter

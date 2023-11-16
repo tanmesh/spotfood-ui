@@ -4,29 +4,18 @@ import { Form, Dropdown, Button, ButtonGroup, ListGroup, Col, Row, Spinner, Moda
 import { ReactComponent as ExploreIcon } from '../assets/svg/exploreIcon.svg'
 import { ReactComponent as HomeIcon } from '../assets/svg/homeIcon.svg'
 import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
-import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
-import RangeSlider from 'react-bootstrap-range-slider';
 import UserContext from '../context/user/UserContext';
-import UserPostsContext from '../context/userPosts/UserPostsContext';
 import React, { useState, useContext } from 'react'
 
-function Navbar({ coords, geolocationEnabled }) {
+function Navbar() {
     const navigate = useNavigate()
-    const { setUserPostsForContext } = useContext(UserPostsContext);
     const { getAccessTokenFromContext, setAccessTokenForContext, setEmailIdForContext } = useContext(UserContext);
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchItem, setSearchItem] = useState("");
     const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
     const location = useLocation();
-
-    const [radius, setRadius] = useState(1);
-    const [selectedNewTags, setSelectedNewTags] = useState([]);
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     // Handling logout 
     const handleLogout = () => {
@@ -116,86 +105,12 @@ function Navbar({ coords, geolocationEnabled }) {
         console.log('searchItem: ', searchItem)
     }
 
-    const handleRange = (e) => {
-        const radius = e.target.value
-        setRadius(radius)
-        console.log('Range selected: ', radius)
-    }
-
-    const handleTagFilter = () => {
-        console.log('selectedNewTags: ', selectedNewTags)
-        const body = {
-            "type": "TAG",
-            "tag": selectedNewTags,
-        }
-
-        console.log('body: ', body)
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': getAccessTokenFromContext(),
-            },
-        };
-        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
-            .then((response) => {
-                console.log('response.data: ', response.data)
-                setUserPostsForContext([...response.data])
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                toast.error('An unexpected error occurred. Please try again.');
-            });
-    }
-
-    const handleRangeFilter = () => {
-        if (!geolocationEnabled) {
-            toast.error('Enable location to filter posts')
-            return;
-        }
-
-        console.log('coord: ', coords)
-
-        const body = {
-            "type": "LOCALITY",
-            "latitude": coords.latitude,
-            "longitude": coords.longitude,
-            "radius": radius,
-        }
-
-        console.log('body: ', body)
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': getAccessTokenFromContext(),
-            },
-        };
-        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby`, body, config)
-            .then((response) => {
-                console.log('response.data: ', response.data)
-                setUserPostsForContext([...response.data])
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                toast.error('An unexpected error occurred. Please try again.');
-            });
-    }
-
-    const handleClearFilter = (e) => {
-        e.preventDefault()
-        setSelectedNewTags([])
-        setRadius(1)
-
-        window.location.reload();
-    }
-
     const isMobile = () => {
         return window.innerWidth <= 800;
     }
 
     return (
-        <div className='navbar fixed-top'>
+        <header className='navbar mb-sm-2 mb-lg-4 fixed-top'>
             <div
                 className='title'
                 onClick={handleTitleClick}
@@ -233,10 +148,9 @@ function Navbar({ coords, geolocationEnabled }) {
                             </ListGroup>
                         </Form.Group>
                     </Col>
-                    <Col xs="auto m-0">
+                    <Col className="d-flex align-items-end">
                         <Button
-                            variant="btn btn-outline-dark sm"
-
+                            variant="btn btn-outline-dark btn-sm"
                             onClick={handleSubmit}>
                             Submit
                         </Button>
@@ -247,94 +161,7 @@ function Navbar({ coords, geolocationEnabled }) {
                 style={{
                     marginTop: '0.5rem',
                 }}>
-                {/* display: 'flex',
-                    justifyContent: 'end',
-                    width: '100%', */}
                 <ul className='navbarList p-0 mb-0 me-0'>
-                    {(isActive('/') || isActive('/explore')) && (
-                        <li>
-                            <Button
-                                variant="btn btn-outline-primary btn-sm"
-                                style={{ padding: isMobile() ? '0.22rem' : '0.5rem' }}
-                                onClick={handleShow}>
-                                Add filter
-                            </Button>
-                        </li>
-                    )}
-                    {(isActive('/') || isActive('/explore')) && (
-                        <li>
-                            <Button
-                                variant="btn btn-outline-primary btn-sm"
-                                style={{ padding: isMobile() ? '0.22rem' : '0.5rem' }}
-                                onClick={handleClearFilter}>
-                                Clear filter
-                            </Button>
-                            <Modal show={show} onHide={handleClose}>
-                                <Modal.Body>
-                                    <div>
-                                        <Form style={{ marginBottom: '2rem' }}>
-                                            <div>
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Range
-                                                    </Form.Label>
-                                                    <RangeSlider
-                                                        value={radius}
-                                                        onChange={handleRange}
-                                                    />
-                                                </Form.Group>
-                                            </div>
-                                            <div>
-                                                <Button
-                                                    className='sm'
-                                                    onClick={handleRangeFilter}
-                                                    style={{ marginRight: '1rem' }}>
-                                                    Add range filter
-                                                </Button>
-                                                <Button
-                                                    className='sm'
-                                                    onClick={() => { setRadius(0) }}>
-                                                    Clear filter
-                                                </Button>
-                                            </div>
-                                        </Form>
-                                    </div>
-                                    <div>
-                                        <Form style={{ marginBottom: '2rem' }}>
-                                            <div>
-                                                <Form.Group className="mb-3" controlId="tags">
-                                                    <TagsInput
-                                                        value={selectedNewTags}
-                                                        onChange={setSelectedNewTags}
-                                                        name="tags"
-                                                        placeHolder="Enter tag"
-                                                    />
-                                                </Form.Group>
-                                            </div>
-                                            <div>
-                                                <Button
-                                                    className='xs-1'
-                                                    onClick={handleTagFilter}
-                                                    style={{ marginRight: '1rem' }}>
-                                                    Add tag filter
-                                                </Button>
-                                                <Button
-                                                    className='xs'
-                                                    onClick={() => { setSelectedNewTags([]) }}>
-                                                    Clear filter
-                                                </Button>
-                                            </div>
-                                        </Form>
-                                    </div>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-                        </li>
-                    )}
                     <li>
                         <ButtonGroup>
                             <Button
@@ -413,7 +240,7 @@ function Navbar({ coords, geolocationEnabled }) {
                     </Dropdown>
                 </ul>
             </div>
-        </div >
+        </header >
     )
 }
 
