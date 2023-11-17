@@ -85,6 +85,7 @@ function Home() {
                             return;
                         }
                         toast.error('An unexpected error occurred. Please try again.');
+                        return;
                     });
             } catch (error) {
                 console.error("Error:", error);

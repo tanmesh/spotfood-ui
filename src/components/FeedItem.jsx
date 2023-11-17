@@ -1,7 +1,7 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import {Button, Card, Stack } from 'react-bootstrap';
+import { Card, Stack, Badge } from 'react-bootstrap';
 import axios from 'axios'
 import React, { useState, useContext } from 'react'
 import UserContext from '../context/user/UserContext';
@@ -136,7 +136,7 @@ function FeedItem({ post }) {
                 .then((response) => {
                     console.log('Response from /user/unfollow_tag: ', response.data)
                     let profile = getProfileFromContext();
-                    profile.tagList.push(tag);  
+                    profile.tagList.push(tag);
                     setProfileForContext(profile);
                 })
                 .catch((error) => {
@@ -202,11 +202,14 @@ function FeedItem({ post }) {
                         </div>
                         <div>
                             {displayButton && (
-                                <Button
-                                    variant='sm btn btn-outline-dark'
-                                    onClick={handleFollow}>
+                                <Badge
+                                    pill
+                                    bg={followed() ? 'secondary' : 'dark'}
+                                    onClick={handleFollow}
+                                    className='badge-effects'
+                                >
                                     {followed() ? 'Unfollow' : 'Follow'}
-                                </Button>
+                                </Badge>
                             )}
                         </div>
                     </div>

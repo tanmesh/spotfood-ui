@@ -110,7 +110,7 @@ function Navbar() {
     }
 
     return (
-        <header className='navbar mb-sm-2 mb-lg-4 fixed-top'>
+        <header className='navbar mb-sm-2 mb-lg-4 fixed-top p-2'>
             <div
                 className='title'
                 onClick={handleTitleClick}

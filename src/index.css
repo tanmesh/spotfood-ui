@@ -152,3 +152,46 @@ p {
 .button-icon-color-change:hover .navbarIcon {
   fill: #ffffff
 }
+
+.badge-effects {
+  transition: transform 0.3s;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 8px 12px;
+}
+
+.badge-effects:hover {
+  transform: scale(1.1);
+}
+
+.icon-effects {
+  cursor: pointer;
+  transition: transform 0.3s;
+  color: white; /* Initial color of the icon */
+}
+
+.icon-effects:hover {
+  transform: scale(1.5);
+  color: red; /* Color when hovering */
+}
+
+.x-icon {
+  cursor: pointer;
+  transition: transform 0.3s;
+  color: white; /* Initial color of the icon */
+}
+
+.x-icon:hover {
+  transform: scale(1.5);
+  color: red; /* Color when hovering */
+}
+
+.plus-icon {
+  cursor: pointer;
+  transition: transform 0.3s;
+  color: white; /* Initial color of the icon */
+}
+
+.plus-icon:hover {
+  transform: scale(1.5);
+}

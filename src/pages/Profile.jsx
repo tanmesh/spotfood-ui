@@ -238,35 +238,28 @@ function Profile() {
                                 <Stack direction="horizontal" gap={2} className='cardDiv'>
                                     {displayTags && displayTags.length > 0 &&
                                         displayTags.map((tag) => (
-                                            <Badge bg="primary">
+                                            <Badge
+                                                pill
+                                                bg="dark"
+                                            >
                                                 #{tag}
                                                 <X
                                                     onClick={() => { handleRemoveTag(tag) }}
-                                                    style={{
-                                                        cursor: 'pointer',
-                                                        transition: 'transform 0.3s', // Add transition for the icon
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
-                                                    }} />
+                                                    className='x-icon'
+                                                />
                                             </Badge>
-                                        ))}
-                                    <Badge bg="primary">
-                                        {<Plus
-                                            onClick={() => { setAddTagInput(true) }} // TODO: add tag
-                                            style={{
-                                                cursor: 'pointer',
-                                                transition: 'transform 0.3s', // Add transition for the icon
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
-                                            }} />}
+                                        ))
+                                    }
+                                    <Badge
+                                        pill
+                                        bg="dark"
+                                    >
+                                        {
+                                            <Plus
+                                                onClick={() => { setAddTagInput(true) }}
+                                                className='plus-icon'
+                                            />
+                                        }
                                     </Badge>
                                 </Stack>
                             </Form.Group>
@@ -288,7 +281,10 @@ function Profile() {
                             <Stack direction="horizontal" gap={2} >
                                 {profile.follower && profile.follower.length > 0
                                     ? profile.follower.map((user) => (
-                                        <Badge bg="primary">
+                                        <Badge
+                                            pill
+                                            bg="dark"
+                                        >
                                             {user}
                                         </Badge>
                                     ))
@@ -307,20 +303,14 @@ function Profile() {
                             <Stack direction="horizontal" gap={2}>
                                 {displayFollowings && displayFollowings.length > 0
                                     ? (displayFollowings.map((user) => (
-                                        <Badge bg="primary">
+                                        <Badge
+                                            pill
+                                            bg="dark"
+                                        >
                                             {user}
                                             <X
                                                 onClick={() => { handleRemoveFollowing(user) }}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    transition: 'transform 0.3s', // Add transition for the icon
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.transform = 'scale(1.3)'; // Scale up on hover
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.transform = 'scale(1)'; // Return to the original size on hover out
-                                                }} />
+                                                className='icon-effects' />
                                         </Badge>
                                     )))
                                     : (
