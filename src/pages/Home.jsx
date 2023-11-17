@@ -151,10 +151,10 @@ function Home() {
 
     return (
         <>
-            <Filter
+            {/* <Filter
                 coords={coords}
                 geolocationEnabled={geolocationEnabled}
-            />
+            /> */}
 
             <ul className='p-2'>
                 {getUserPostsFromContext().map((post) => (

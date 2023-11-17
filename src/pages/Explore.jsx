@@ -129,10 +129,10 @@ function Explore() {
     return (
         <>
             <main>
-                <Filter
+                {/* <Filter
                     coords={coords}
                     geolocationEnabled={geolocationEnabled}
-                />
+                /> */}
 
                 <ul className='p-2'>
                     {getUserPostsFromContext().map((post) => (

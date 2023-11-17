@@ -117,7 +117,7 @@ function Navbar() {
                 style={{ cursor: 'pointer' }}>
                 Spotfood
             </div>
-            <Form>
+            {/* <Form>
                 <Row>
                     <Col xs="auto">
                         <Form.Group className="typeahead-form-group">
@@ -156,7 +156,7 @@ function Navbar() {
                         </Button>
                     </Col>
                 </Row>
-            </Form>
+            </Form> */}
             <div
                 style={{
                     marginTop: '0.5rem',
