@@ -13,8 +13,7 @@ function FeedItem({ post }) {
     const { getProfileFromContext, setProfileForContext } = useContext(UserPostsContext);
     const [liked, setLiked] = useState(post.liked);
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
-    // eslint-disable-next-line
-    const [displayButton, setDisplayFollowButton] = useState(getProfileFromContext() === null || post.authorEmailId !== getProfileFromContext().emailId);
+    const displayButton = getProfileFromContext() === null || post.authorEmailId !== getProfileFromContext().emailId;
     const navigate = useNavigate()
 
     const handleLikeClick = (e) => {
@@ -189,7 +188,7 @@ function FeedItem({ post }) {
                         {post.distance !== 0 && (
                             <div>
                                 <p className="m-0" style={{ color: 'green' }}>
-                                    {post.distance} mile away
+                                    <b>{post.distance} mile away</b>
                                 </p>
                             </div>
                         )}

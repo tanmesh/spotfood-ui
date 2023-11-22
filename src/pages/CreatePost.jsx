@@ -2,7 +2,6 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
-import Navbar from '../components/Navbar'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import UserContext from '../context/user/UserContext';
@@ -23,7 +22,7 @@ function CreatePost() {
         setLoading(true)
 
         console.log('accessToken: ', getAccessTokenFromContext())
-        if (getAccessTokenFromContext() == 'null') {
+        if (getAccessTokenFromContext() === 'null') {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;

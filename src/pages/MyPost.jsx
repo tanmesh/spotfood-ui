@@ -161,6 +161,7 @@ function MyPost() {
                                                     width={window.innerWidth <= 800 ? '20%' : '5%'}
                                                     height={window.innerHeight <= 800 ? '20%' : '5%'}
                                                     src={ThatsAll}
+                                                    alt='Thats all'
                                                 />
                                             )
                                             : (

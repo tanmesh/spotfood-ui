@@ -13,6 +13,7 @@ function NoFound() {
                     width={window.innerWidth <= 800 ? '70%' : '20%'}
                     height={window.innerHeight <= 800 ? '100%' : '20%'}
                     src={Cat404}
+                    alt='Page not found'
                 />
             </div>
         </>

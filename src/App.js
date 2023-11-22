@@ -22,9 +22,9 @@ function App() {
       <UserProvider>
         <Router>
           <Navbar />
-          <div 
-          className='mx-auto px-3 pb-12'
-          style={{marginTop: '6rem'}}>
+          <div
+            className='mx-auto px-3 pb-12'
+            style={{ marginTop: '6rem' }}>
             <Routes>
               <Route path="/" element={<Home />} exact />
               <Route path="/profile" element={<Profile />} exact />

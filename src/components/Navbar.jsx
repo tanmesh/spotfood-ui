@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { toast } from 'react-toastify';
-import { Form, Dropdown, Button, ButtonGroup, ListGroup, Col, Row, Spinner, Modal } from 'react-bootstrap';
+import { Form, Dropdown, Button, ButtonGroup, ListGroup, Col, Row, Spinner } from 'react-bootstrap';
 import { ReactComponent as ExploreIcon } from '../assets/svg/exploreIcon.svg'
 import { ReactComponent as HomeIcon } from '../assets/svg/homeIcon.svg'
 import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
@@ -117,7 +117,7 @@ function Navbar() {
                 style={{ cursor: 'pointer' }}>
                 Spotfood
             </div>
-            {/* <Form>
+            <Form>
                 <Row>
                     <Col xs="auto">
                         <Form.Group className="typeahead-form-group">
@@ -156,7 +156,7 @@ function Navbar() {
                         </Button>
                     </Col>
                 </Row>
-            </Form> */}
+            </Form>
             <div
                 style={{
                     marginTop: '0.5rem',

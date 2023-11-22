@@ -7,7 +7,7 @@ body {
 
 p {
   font-size: 14px;
-  @media (min-width: 800px) {
+  @media (max-width: 1000px) {
     font-size: 12px;
   }
 }
@@ -51,7 +51,7 @@ p {
 
 .card {
   width: 30%;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.7);
 
   @media (max-width: 1000px) {
     width: 90%
