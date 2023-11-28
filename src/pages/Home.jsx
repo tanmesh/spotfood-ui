@@ -41,7 +41,7 @@ function Home() {
     }
 
     const handleTagFilter = () => {
-        if(tagFilterActive === false) {
+        if (tagFilterActive === false) {
             setUserPostsForContext([])
         }
         setTagFilterActive(true)
@@ -64,7 +64,7 @@ function Home() {
         axios.post(`${process.env.REACT_APP_API_URL}/search/nearby/${lastFetchedTags}`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
-                if(response.data.length === 0) {
+                if (response.data.length === 0) {
                     setThatsAll(true)
                     return;
                 }
@@ -78,11 +78,11 @@ function Home() {
     }
 
     const handleRangeFilter = () => {
-        if(rangeFilterActive === false) {
+        if (rangeFilterActive === false) {
             setUserPostsForContext([])
         }
         setRangeFilterActive(true)
-        
+
         if (!geolocationEnabled) {
             toast.error('Enable location to filter posts')
             return;
@@ -109,7 +109,7 @@ function Home() {
         axios.post(`${process.env.REACT_APP_API_URL}/search/nearby/${lastFetchedNearby}`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
-                if(response.data.length === 0) {
+                if (response.data.length === 0) {
                     setThatsAll(true)
                     return;
                 }
@@ -126,7 +126,7 @@ function Home() {
         e.preventDefault()
         setSelectedNewTags([])
         setRadius(1)
-        
+
         setLastFetched(0)
         setLastFetchedTags(0)
         setLastFetchedNearby(0)
@@ -157,7 +157,7 @@ function Home() {
                 .then((response) => {
                     setLoading(false)
                     console.log('response.data: ', response.data)
-                    if(response.data.length === 0) {
+                    if (response.data.length === 0) {
                         setThatsAll(true)
                         return;
                     }
@@ -269,15 +269,10 @@ function Home() {
                     zIndex: '1',
                     right: '30px',
                 }} >
-                <Button
-                    size='sm'
-                    onClick={handleShow}>
+                <Button size='sm' onClick={handleShow}>
                     Add filter
                 </Button>
-                <Button
-                    size='sm'
-                    className='xs-1'
-                    onClick={handleClearFilter}>
+                <Button size='sm' className='xs-1' onClick={handleClearFilter}>
                     Clear filter
                 </Button>
                 <Modal show={show} onHide={handleClose}>
@@ -289,22 +284,14 @@ function Home() {
                                         <Form.Label>
                                             Range
                                         </Form.Label>
-                                        <RangeSlider
-                                            value={radius}
-                                            onChange={handleRange}
-                                        />
+                                        <RangeSlider value={radius} onChange={handleRange} />
                                     </Form.Group>
                                 </div>
                                 <div>
-                                    <Button
-                                        className='xs'
-                                        onClick={handleRangeFilter}
-                                        style={{ marginRight: '1rem' }}>
+                                    <Button className='xs' onClick={handleRangeFilter} style={{ marginRight: '1rem' }}>
                                         Add range filter
                                     </Button>
-                                    <Button
-                                        className='xs'
-                                        onClick={() => { setRadius(0) }}>
+                                    <Button className='xs' onClick={() => { setRadius(0) }}>
                                         Clear filter
                                     </Button>
                                 </div>
@@ -314,24 +301,15 @@ function Home() {
                             <Form style={{ marginBottom: '2rem' }}>
                                 <div>
                                     <Form.Group className="mb-3" controlId="tags">
-                                        <TagsInput
-                                            value={selectedNewTags}
-                                            onChange={setSelectedNewTags}
-                                            name="tags"
-                                            placeHolder="Enter tag"
-                                        />
+                                        <TagsInput value={selectedNewTags} onChange={setSelectedNewTags}
+                                            name="tags" placeHolder="Enter tag" />
                                     </Form.Group>
                                 </div>
                                 <div>
-                                    <Button
-                                        className='xs-1'
-                                        onClick={handleTagFilter}
-                                        style={{ marginRight: '1rem' }}>
+                                    <Button className='xs-1' onClick={handleTagFilter} style={{ marginRight: '1rem' }}>
                                         Add tag filter
                                     </Button>
-                                    <Button
-                                        className='xs'
-                                        onClick={() => { setSelectedNewTags([]) }}>
+                                    <Button className='xs' onClick={() => { setSelectedNewTags([]) }}>
                                         Clear filter
                                     </Button>
                                 </div>
@@ -348,10 +326,7 @@ function Home() {
 
             <ul className='p-1'>
                 {getUserPostsFromContext().map((post) => (
-                    <FeedItem
-                        key={post.postId}
-                        post={post}
-                    />
+                    <FeedItem key={post.postId} post={post} />
                 ))}
             </ul>
 
@@ -363,15 +338,11 @@ function Home() {
                                 <img
                                     width={window.innerWidth <= 800 ? '20%' : '5%'}
                                     height={window.innerHeight <= 800 ? '20%' : '5%'}
-                                    src={ThatsAll}
-                                    alt='Thats all'
+                                    src={ThatsAll} alt='Thats all'
                                 />
                             )
                             : (
-                                <Button
-                                    variant="outline-dark"
-                                    onClick={handleLoadMore}
-                                >
+                                <Button variant="outline-dark" onClick={handleLoadMore} >
                                     Load more
                                 </Button>
                             )

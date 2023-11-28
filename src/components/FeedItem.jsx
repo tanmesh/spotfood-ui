@@ -1,7 +1,7 @@
 import { Heart, HeartFill } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { Card, Stack, Badge } from 'react-bootstrap';
+import { Card, Stack, Badge, Carousel } from 'react-bootstrap';
 import axios from 'axios'
 import React, { useState, useContext } from 'react'
 import UserContext from '../context/user/UserContext';
@@ -15,6 +15,10 @@ function FeedItem({ post }) {
     const [likeCnt, setLikeCnt] = useState(post.upVotes);
     const displayButton = getProfileFromContext() === null || post.authorEmailId !== getProfileFromContext().emailId;
     const navigate = useNavigate()
+
+    const isMobile = () => {
+        return window.innerWidth <= 800;
+    }
 
     const handleLikeClick = (e) => {
         e.preventDefault()
@@ -152,11 +156,21 @@ function FeedItem({ post }) {
                 border="border-dark"
                 className='card text-center'>
                 <Card.Header className='p-0 m-0'>
-                    <Card.Img
-                        variant="top"
-                        src={post.imgUrl}
-                        className={liked ? "like-animated" : ""}
-                        onDoubleClick={handleLikeClick} />
+                    <Carousel interval={null} style={{ backgroundColor: 'black' }}>
+                        {post.imgUrl.map((url, index) => (
+                            <Carousel.Item key={index}>
+                                <div style={{ width: '100%', height: isMobile() ? '300px' : '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <img
+                                        src={url}
+                                        alt={`Slide ${index}`}
+                                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                        className={liked ? "like-animated" : ""}
+                                        onDoubleClick={handleLikeClick}
+                                    />
+                                </div>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
                 </Card.Header>
                 <Card.Body className='p-0 mt-1 mb-1'>
                     <div className='cardBodyDiv m-0'>
