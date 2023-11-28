@@ -156,21 +156,25 @@ function FeedItem({ post }) {
                 border="border-dark"
                 className='card text-center'>
                 <Card.Header className='p-0 m-0'>
-                    <Carousel interval={null} style={{ backgroundColor: 'black' }}>
-                        {post.imgUrl.map((url, index) => (
-                            <Carousel.Item key={index}>
-                                <div style={{ width: '100%', height: isMobile() ? '300px' : '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <img
-                                        src={url}
-                                        alt={`Slide ${index}`}
-                                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                                        className={liked ? "like-animated" : ""}
-                                        onDoubleClick={handleLikeClick}
-                                    />
-                                </div>
-                            </Carousel.Item>
-                        ))}
-                    </Carousel>
+                    {Array.isArray(post.imgUrl) ? (
+                        <Carousel interval={null} style={{ backgroundColor: 'black' }}>
+                            {post.imgUrl.map((url, index) => (
+                                <Carousel.Item key={index}>
+                                    <div style={{ width: '100%', height: isMobile() ? '300px' : '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        <img
+                                            src={url}
+                                            alt={`Slide ${index}`}
+                                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                            className={liked ? "like-animated" : ""}
+                                            onDoubleClick={handleLikeClick}
+                                        />
+                                    </div>
+                                </Carousel.Item>
+                            ))}
+                        </Carousel>
+                    ) : (
+                        <p>Invalid or missing image URLs for this post.</p>
+                    )}
                 </Card.Header>
                 <Card.Body className='p-0 mt-1 mb-1'>
                     <div className='cardBodyDiv m-0'>
