@@ -173,9 +173,9 @@ function Home() {
                 .catch((error) => {
                     setLoading(false)
                     console.error("Error:", error);
-                    // if (setUserFeedForContext().length === 0) {
-                    //     return;
-                    // }
+                    if (setUserFeedForContext().length === 0) {
+                        return;
+                    }
                     toast.error('An unexpected error occurred. Please try again.');
                     return;
                 });
