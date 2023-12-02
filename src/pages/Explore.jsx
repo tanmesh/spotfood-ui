@@ -13,14 +13,14 @@ import ThatsAll from '../assets/thats-all.png'
 
 function Explore() {
     const { getAccessTokenFromContext, getEmailIdFromContext } = useContext(UserContext);
-    const { getUserPostsFromContext, setUserPostsForContext, setProfileForContext } = useContext(UserPostsContext);
+    const { getUserExploreFromContext, setUserExploreForContext, setProfileForContext } = useContext(UserPostsContext);
     const [thatsAll, setThatsAll] = useState(false);
     const [loading, setLoading] = useState(false);
-    
+
     const [lastFetched, setLastFetched] = useState(0)
     const [lastFetchedTags, setLastFetchedTags] = useState(0)
     const [lastFetchedNearby, setLastFetchedNearby] = useState(0)
-    
+
     const [coords, setCoords] = useState({});
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
 
@@ -32,6 +32,12 @@ function Explore() {
     const [tagFilterActive, setTagFilterActive] = useState(false);
     const [rangeFilterActive, setRangeFilterActive] = useState(false);
 
+    const [address, setAddress] = useState();
+    const [geolocation, setGeolocation] = useState({
+        lat: 0,
+        lng: 0,
+    })
+
     const handleRange = (e) => {
         const radius = e.target.value
         setRadius(radius)
@@ -39,9 +45,7 @@ function Explore() {
     }
 
     const handleTagFilter = () => {
-        if (tagFilterActive === false) {
-            setUserPostsForContext([])
-        }
+        setUserExploreForContext([])
         setTagFilterActive(true)
 
         console.log('selectedNewTags: ', selectedNewTags)
@@ -62,11 +66,11 @@ function Explore() {
         axios.post(`${process.env.REACT_APP_API_URL}/search/nearby/${lastFetchedTags}`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
-                if(response.data.length === 0) {
+                if (response.data.length === 0) {
                     setThatsAll(true)
                     return;
                 }
-                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setUserExploreForContext((prevState) => [...prevState, ...response.data])
                 setLastFetchedTags(lastFetchedTags + 2)
             })
             .catch((error) => {
@@ -76,22 +80,24 @@ function Explore() {
     }
 
     const handleRangeFilter = () => {
-        if (rangeFilterActive === false) {
-            setUserPostsForContext([])
-        }
+        setUserExploreForContext([])
         setRangeFilterActive(true)
 
-        if (!geolocationEnabled) {
-            toast.error('Enable location to filter posts')
+        if (geolocation.lat === 0 && geolocation.lng === 0) {
+            toast.error('Enter your address')
             return;
         }
+        // if (!geolocationEnabled) {
+        //     toast.error('Enable location to filter posts')
+        //     return;
+        // }
 
         console.log('coord: ', coords)
 
         const body = {
             "type": "LOCALITY",
-            "latitude": coords.latitude,
-            "longitude": coords.longitude,
+            "latitude": geolocation.lat,
+            "longitude": geolocation.lng,
             "radius": radius,
             "searchOn": "EXPLORE",
         }
@@ -107,11 +113,11 @@ function Explore() {
         axios.post(`${process.env.REACT_APP_API_URL}/search/nearby/${lastFetchedNearby}`, body, config)
             .then((response) => {
                 console.log('response.data: ', response.data)
-                if(response.data.length === 0) {
+                if (response.data.length === 0) {
                     setThatsAll(true)
                     return;
                 }
-                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setUserExploreForContext((prevState) => [...prevState, ...response.data])
                 setLastFetchedNearby(lastFetchedNearby + 2)
             })
             .catch((error) => {
@@ -124,7 +130,7 @@ function Explore() {
         e.preventDefault()
         setSelectedNewTags([])
         setRadius(1)
-        
+
         setLastFetched(0)
         setLastFetchedTags(0)
         setLastFetchedNearby(0)
@@ -156,13 +162,11 @@ function Explore() {
     }
 
     useEffect(() => {
-        setUserPostsForContext([])
+        setUserExploreForContext([])
         setLoading(true)
-        enableLocation()
+        // enableLocation()
 
         setProfileForContext(null)
-
-        console.log('process.env.REACT_APP_API_URL: ', process.env.REACT_APP_API_URL)
 
         if (tagFilterActive === false && rangeFilterActive === false) {
             fetchFeed()
@@ -205,7 +209,7 @@ function Explore() {
                     setThatsAll(true)
                 }
                 setLastFetched(lastFetched + 2)
-                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setUserExploreForContext((prevState) => [...prevState, ...response.data])
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -221,6 +225,23 @@ function Explore() {
         } else {
             fetchFeed()
         }
+    }
+
+    const handleLocation = async () => {
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.trim()}'&key=${process.env.REACT_APP_GEOCODE_API_KEY}`)
+        const data = await response.json()
+
+        geolocation.lat = data.results[0]?.geometry.location.lat ?? 0
+        geolocation.lng = data.results[0]?.geometry.location.lng ?? 0
+        let location = data.status === 'ZERO_RESULTS' ? 'undefined' : data.results[0]?.formatted_address
+
+        if (location === 'undefined' || location.includes('undefined')) {
+            setLoading(false)
+            toast.error('Please enter correct address!')
+            return
+        }
+
+        console.log('geolocation: ', geolocation)
     }
 
     if (loading) {
@@ -252,6 +273,22 @@ function Explore() {
                     </Button>
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Body>
+                            <div>
+                                <Form style={{ marginBottom: '2rem' }}>
+                                    <div>
+                                        <Form.Group className="mb-3" controlId="location">
+                                            <Form.Control type="text" placeholder="Enter your location"
+                                                value={address} onChange={(e) => { setAddress(e.target.value) }} name="location"
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    <div>
+                                        <Button className='xs-1' onClick={handleLocation} style={{ marginRight: '1rem' }}>
+                                            Add location
+                                        </Button>
+                                    </div>
+                                </Form>
+                            </div>
                             <div>
                                 <Form style={{ marginBottom: '2rem' }}>
                                     <div>
@@ -317,7 +354,7 @@ function Explore() {
                 </div>
 
                 <ul className='p-2'>
-                    {getUserPostsFromContext().map((post) => (
+                    {getUserExploreFromContext().map((post) => (
                         <FeedItem
                             key={post.postId}
                             post={post}
@@ -325,7 +362,7 @@ function Explore() {
                     ))}
                 </ul>
 
-                {getUserPostsFromContext().length !== 0
+                {getUserExploreFromContext().length !== 0
                     ? (
                         <div className="d-flex justify-content-center">
                             {thatsAll

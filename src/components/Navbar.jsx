@@ -1,12 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { toast } from 'react-toastify';
-import { Form, Dropdown, Button, ButtonGroup, ListGroup, Col, Row, Spinner } from 'react-bootstrap';
-import { ReactComponent as ExploreIcon } from '../assets/svg/exploreIcon.svg'
-import { ReactComponent as HomeIcon } from '../assets/svg/homeIcon.svg'
-import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
+import { Dropdown, Button, ButtonGroup } from 'react-bootstrap';
 import axios from 'axios'
 import UserContext from '../context/user/UserContext';
+import UserPostsContext from '../context/userPosts/UserPostsContext'
 import React, { useState, useContext } from 'react'
+import { FaPlus, FaHome, FaCompass } from 'react-icons/fa'
 
 function Navbar() {
     const navigate = useNavigate()
@@ -16,6 +15,10 @@ function Navbar() {
     const [searchItem, setSearchItem] = useState("");
     const [isSearchItemSelected, setIsSearchItemSelected] = useState(false);
     const location = useLocation();
+
+    const { setUserPostsForContext } = useContext(UserPostsContext);
+    const [lastFetchedTags, setLastFetchedTags] = useState(0)
+    const [thatsAll, setThatsAll] = useState(false);
 
     // Handling logout 
     const handleLogout = () => {
@@ -95,9 +98,41 @@ function Navbar() {
         }
     };
 
+    const handleTagFilter = () => {
+        const body = {
+            "type": "TAG",
+            "tag": [searchItem],
+            "searchOn": "FEED",
+        }
+
+        console.log('body: ', body)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+        axios.post(`${process.env.REACT_APP_API_URL}/search/nearby/${lastFetchedTags}`, body, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                if (response.data.length === 0) {
+                    setThatsAll(true)
+                    return;
+                }
+                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setLastFetchedTags(lastFetchedTags + 2)
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
+
     const onSearchItemSelected = (selectedSearchItem) => {
         setSearchItem(selectedSearchItem);
         setIsSearchItemSelected(true);
+        handleTagFilter()
         setResults([]);
     };
 
@@ -117,46 +152,6 @@ function Navbar() {
                 style={{ cursor: 'pointer' }}>
                 Spotfood
             </div>
-            <Form>
-                <Row>
-                    <Col xs="auto">
-                        <Form.Group className="typeahead-form-group">
-                            <Form.Control
-                                type="text"
-                                autoComplete="off"
-                                onChange={handleInputChange}
-                                value={searchItem}
-                                style={{ width: isMobile() ? '150px' : '300px' }}
-                                placeholder="Search for tags, restaurants, users..."
-                            />
-                            <ListGroup className="typeahead-list-group">
-                                {!isSearchItemSelected &&
-                                    results.length > 0 &&
-                                    results.map((result) => (
-                                        <ListGroup.Item
-                                            key={result}
-                                            className="typeahead-list-group-item"
-                                            onClick={() => onSearchItemSelected(result)}>
-                                            {result}
-                                        </ListGroup.Item>
-                                    ))}
-                                {!results.length && isLoading && (
-                                    <div className="typeahead-spinner-container">
-                                        <Spinner animation="border" />
-                                    </div>
-                                )}
-                            </ListGroup>
-                        </Form.Group>
-                    </Col>
-                    <Col className="d-flex align-items-end">
-                        <Button
-                            variant="btn btn-outline-dark btn-sm"
-                            onClick={handleSubmit}>
-                            Submit
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
             <div
                 style={{
                     marginTop: '0.5rem',
@@ -168,11 +163,11 @@ function Navbar() {
                                 onClick={() => navigate('/')}
                                 variant={isActive('/') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
                                 className="button-icon-color-change">
-                                <HomeIcon
+                                <FaHome
                                     className="navbarIcon"
                                     fill={isActive('/') ? '#ffffff' : '#00000'}
                                     style={{ transition: 'fill 0.3s' }} />
-                                {isMobile() ? '' : 'Home'}
+                                {isMobile() ? '' : ' Home'}
                             </Button>
                         </ButtonGroup>
                     </li>
@@ -183,11 +178,11 @@ function Navbar() {
                                 onClick={() => navigate('/explore')}
                                 variant={isActive('/explore') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
                                 className="button-icon-color-change">
-                                <ExploreIcon
+                                <FaCompass
                                     className="navbarIcon"
                                     fill={isActive('/explore') ? '#ffffff' : '#00000'}
                                     style={{ transition: 'fill 0.3s' }} />
-                                {isMobile() ? '' : 'Explore'}
+                                {isMobile() ? '' : ' Explore'}
                             </Button>
                         </ButtonGroup>
                     </li>
@@ -198,11 +193,12 @@ function Navbar() {
                                 onClick={() => navigate('/add-post')}
                                 variant={isActive('/add-post') ? "dark btn-sm" : "btn btn-outline-dark btn-sm"}
                                 className="button-icon-color-change">
-                                <EditIcon
+                                <FaPlus
                                     className="navbarIcon"
                                     fill={isActive('/add-post') ? '#ffffff' : '#00000'}
                                     style={{ transition: 'fill 0.3s' }} />
-                                {isMobile() ? '' : 'Add new post'}
+
+                                {isMobile() ? '' : ' Add new post'}
                             </Button>
                         </ButtonGroup>
                     </li>

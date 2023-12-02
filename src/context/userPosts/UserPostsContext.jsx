@@ -3,7 +3,8 @@ import React, { createContext, useState } from "react";
 const UserPostsContext = createContext()
 
 export const UserPostsProvider = ({ children }) => {
-    const [userposts, setUserposts] = useState([])
+    const [feed, setFeed] = useState([])
+    const [explore, setExplore] = useState([])
     const [profile, setProfile] = useState({
         emailId: '',
         firstName: '',
@@ -28,18 +29,28 @@ export const UserPostsProvider = ({ children }) => {
         return profile;
     }
 
-    const setUserPostsForContext = (userPosts) => {
-        setUserposts(userPosts)
+    const setUserFeedForContext = (feed) => {
+        setFeed(feed)
     }
 
-    const getUserPostsFromContext = () => {
-        return userposts;
+    const getUserFeedFromContext = () => {
+        return feed;
+    }
+
+    const setUserExploreForContext = (explore) => {
+        setExplore(explore)
+    }
+
+    const getUserExploreFromContext = () => {
+        return explore;
     }
 
     return <UserPostsContext.Provider
         value={{
-            setUserPostsForContext,
-            getUserPostsFromContext,
+            setUserFeedForContext,
+            getUserFeedFromContext,
+            setUserExploreForContext,
+            getUserExploreFromContext,
             setProfileForContext,
             getProfileFromContext
         }}>

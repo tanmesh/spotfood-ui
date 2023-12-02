@@ -14,7 +14,7 @@ import ThatsAll from '../assets/thats-all.png'
 
 function Home() {
     const { getAccessTokenFromContext } = useContext(UserContext);
-    const { getUserPostsFromContext, setUserPostsForContext, setProfileForContext } = useContext(UserPostsContext);
+    const { getUserFeedFromContext, setUserFeedForContext, setProfileForContext } = useContext(UserPostsContext);
     const [loading, setLoading] = useState(false);
 
     const [lastFetched, setLastFetched] = useState(0)
@@ -28,11 +28,17 @@ function Home() {
 
     const [radius, setRadius] = useState(1);
     const [selectedNewTags, setSelectedNewTags] = useState([]);
+    const [address, setAddress] = useState();
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const [tagFilterActive, setTagFilterActive] = useState(false);
     const [rangeFilterActive, setRangeFilterActive] = useState(false);
+
+    const [geolocation, setGeolocation] = useState({
+        lat: 0,
+        lng: 0,
+    })
 
     const handleRange = (e) => {
         const radius = e.target.value
@@ -41,9 +47,7 @@ function Home() {
     }
 
     const handleTagFilter = () => {
-        if (tagFilterActive === false) {
-            setUserPostsForContext([])
-        }
+        setUserFeedForContext([])
         setTagFilterActive(true)
 
         console.log('selectedNewTags: ', selectedNewTags)
@@ -68,7 +72,7 @@ function Home() {
                     setThatsAll(true)
                     return;
                 }
-                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setUserFeedForContext((prevState) => [...prevState, ...response.data])
                 setLastFetchedTags(lastFetchedTags + 2)
             })
             .catch((error) => {
@@ -78,22 +82,24 @@ function Home() {
     }
 
     const handleRangeFilter = () => {
-        if (rangeFilterActive === false) {
-            setUserPostsForContext([])
-        }
+        setUserFeedForContext([])
         setRangeFilterActive(true)
 
-        if (!geolocationEnabled) {
-            toast.error('Enable location to filter posts')
+        if (geolocation.lat === 0 && geolocation.lng === 0) {
+            toast.error('Enter your address')
             return;
         }
+        // if (!geolocationEnabled) {
+        //     toast.error('Enable location to filter posts')
+        //     return;
+        // }
 
         console.log('coord: ', coords)
 
         const body = {
             "type": "LOCALITY",
-            "latitude": coords.latitude,
-            "longitude": coords.longitude,
+            "latitude": geolocation.lat,
+            "longitude": geolocation.lng,
             "radius": radius,
             "searchOn": "FEED",
         }
@@ -113,7 +119,7 @@ function Home() {
                     setThatsAll(true)
                     return;
                 }
-                setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                setUserFeedForContext((prevState) => [...prevState, ...response.data])
                 setLastFetchedNearby(lastFetchedNearby + 2)
             })
             .catch((error) => {
@@ -162,12 +168,12 @@ function Home() {
                         return;
                     }
                     setLastFetched(lastFetched + 2)
-                    setUserPostsForContext((prevState) => [...prevState, ...response.data])
+                    setUserFeedForContext((prevState) => [...prevState, ...response.data])
                 })
                 .catch((error) => {
                     setLoading(false)
                     console.error("Error:", error);
-                    if (getUserPostsFromContext().length === 0) {
+                    if (setUserFeedForContext().length === 0) {
                         return;
                     }
                     toast.error('An unexpected error occurred. Please try again.');
@@ -200,28 +206,28 @@ function Home() {
             });
     }
 
-    const enableLocation = () => {
-        // use current location
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-        };
+    // const enableLocation = () => {
+    // // use current location
+    // const options = {
+    //     enableHighAccuracy: true,
+    //     // timeout: 10000,
+    // };
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setCoords(position.coords)
-                console.log('location is enabled', position.coords)
-                setGeolocationEnabled(true)
-            },
-            (error) => {
-                console.log('location is disabled: ', error)
-            },
-            options
-        );
-    }
+    // navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //         setCoords(position.coords)
+    //         console.log('location is enabled', position.coords)
+    //         setGeolocationEnabled(true)
+    //     },
+    //     (error) => {
+    //         console.log('location is disabled: ', error)
+    //     },
+    //     options
+    // );
+    // }
 
     useEffect(() => {
-        setUserPostsForContext([])
+        setUserFeedForContext([])
         setLoading(true)
 
         setProfileForContext(null)
@@ -233,7 +239,7 @@ function Home() {
             return;
         }
 
-        enableLocation()
+        // enableLocation()
 
         if (tagFilterActive === false && rangeFilterActive === false) {
             fetchFeed()
@@ -242,6 +248,7 @@ function Home() {
         fetchProfile()
 
         setLoading(false)
+        // eslint-disable-next-line
     }, [])
 
     const handleLoadMore = async () => {
@@ -252,6 +259,23 @@ function Home() {
         } else {
             fetchFeed()
         }
+    }
+
+    const handleLocation = async () => {
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.trim()}'&key=${process.env.REACT_APP_GEOCODE_API_KEY}`)
+        const data = await response.json()
+
+        geolocation.lat = data.results[0]?.geometry.location.lat ?? 0
+        geolocation.lng = data.results[0]?.geometry.location.lng ?? 0
+        let location = data.status === 'ZERO_RESULTS' ? 'undefined' : data.results[0]?.formatted_address
+
+        if (location === 'undefined' || location.includes('undefined')) {
+            setLoading(false)
+            toast.error('Please enter correct address!')
+            return
+        }
+
+        console.log('geolocation: ', geolocation)
     }
 
     if (loading) {
@@ -280,19 +304,30 @@ function Home() {
                         <div>
                             <Form style={{ marginBottom: '2rem' }}>
                                 <div>
+                                    <Form.Group className="mb-3" controlId="location">
+                                        <Form.Control type="text" placeholder="Enter your location"
+                                            value={address} onChange={(e) => { setAddress(e.target.value) }} name="location"
+                                        />
+                                    </Form.Group>
+                                </div>
+                                <div>
+                                    <Button className='xs-1' onClick={handleLocation} style={{ marginRight: '1rem' }}>
+                                        Add location
+                                    </Button>
+                                </div>
+                            </Form>
+                        </div>
+                        <div>
+                            <Form style={{ marginBottom: '2rem' }}>
+                                <div>
                                     <Form.Group>
-                                        <Form.Label>
-                                            Range
-                                        </Form.Label>
+                                        <Form.Label> Range </Form.Label>
                                         <RangeSlider value={radius} onChange={handleRange} />
                                     </Form.Group>
                                 </div>
                                 <div>
                                     <Button className='xs' onClick={handleRangeFilter} style={{ marginRight: '1rem' }}>
                                         Add range filter
-                                    </Button>
-                                    <Button className='xs' onClick={() => { setRadius(0) }}>
-                                        Clear filter
                                     </Button>
                                 </div>
                             </Form>
@@ -325,12 +360,12 @@ function Home() {
             </div>
 
             <ul className='p-1'>
-                {getUserPostsFromContext().map((post) => (
+                {getUserFeedFromContext().map((post) => (
                     <FeedItem key={post.postId} post={post} />
                 ))}
             </ul>
 
-            {getUserPostsFromContext() && getUserPostsFromContext().length !== 0
+            {getUserFeedFromContext() && getUserFeedFromContext().length !== 0
                 ? (
                     <div className="d-flex justify-content-center">
                         {thatsAll

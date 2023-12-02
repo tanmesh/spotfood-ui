@@ -180,8 +180,11 @@ function Profile() {
 
         setLoading(true)
 
-        const imgUrl = (await Promise.all([uploadFile(profileImgFile)]))[0]
-        console.log(imgUrl)
+        const imgUrl = null;
+        if(profileImgFile !== null) {
+            imgUrl = (await Promise.all([uploadFile(profileImgFile)]))[0]
+            console.log(imgUrl)
+        }
 
         const profileData = {
             ...profile,

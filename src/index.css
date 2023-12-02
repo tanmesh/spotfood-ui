@@ -43,7 +43,7 @@ p {
   list-style-type: none;
   display: flex;
   flex-direction: row;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
   margin-right: 1rem;

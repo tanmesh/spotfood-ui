@@ -203,10 +203,17 @@ function FeedItem({ post }) {
                                 <strong>Restaurant:</strong> {post.locationName}
                             </p>
                         </div>
-                        {post.distance !== 0 && (
+                        {post.distance >= 1 && (
                             <div>
                                 <p className="m-0" style={{ color: 'green' }}>
                                     <b>{post.distance} mile away</b>
+                                </p>
+                            </div>
+                        )}
+                        {post.distance === 0 && (
+                            <div>
+                                <p className="m-0" style={{ color: 'green' }}>
+                                    <b>Around you</b>
                                 </p>
                             </div>
                         )}

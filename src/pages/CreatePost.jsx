@@ -11,9 +11,9 @@ import React, { useState, useContext, useEffect } from 'react'
 
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(UserContext);
-    const [geolocationEnabled, setGeolocationEnabled] = useState(true);
+    const [geolocationEnabled, setGeolocationEnabled] = useState(false);
     const [address, setAddress] = useState('')
-    const [imgFile, setImgFile] = useState(null)
+    const [imgFiles, setImgFiles] = useState([])
     const [selectedTags, setSelectedTags] = useState([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
@@ -28,23 +28,23 @@ function CreatePost() {
             return;
         }
 
-        // use current location
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-        };
+        // // use current location
+        // const options = {
+        //     enableHighAccuracy: true,
+        //     timeout: 10000,
+        // };
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                console.log('location is enabled', position.coords)
-                setGeolocationEnabled(true)
-            },
-            (error) => {
-                setGeolocationEnabled(false)
+        // navigator.geolocation.getCurrentPosition(
+        //     (position) => {
+        //         console.log('location is enabled', position.coords)
+        //         setGeolocationEnabled(true)
+        //     },
+        //     (error) => {
+        //         setGeolocationEnabled(false)
 
-            },
-            options
-        );
+        //     },
+        //     options
+        // );
 
         setLoading(false)
     }, [])
@@ -156,17 +156,20 @@ function CreatePost() {
         setLoading(true)
 
         const geolocation_ = (await Promise.all([handleGeolocation()]))[0]
-        const imgUrl = (await Promise.all([uploadFile(imgFile)]))[0]
+        const imgUrlList = []
+        for (const imgFile of imgFiles) {
+            imgUrlList.push((await Promise.all([uploadFile(imgFile)]))[0])
+        }
 
         console.log('geolocation_: ', geolocation_)
-        console.log('imgUrl: ', imgUrl)
+        console.log('imgUrlList: ', imgUrlList)
 
         const formDataCopy = {
             ...formData,
             latitude: geolocation_.latitude,
             longitude: geolocation_.longitude,
             tagList: selectedTags,
-            imgUrl,
+            imgUrl: imgUrlList,
         }
 
         console.log('Access token: ', getAccessTokenFromContext())
@@ -203,7 +206,8 @@ function CreatePost() {
 
     const onMutate = async (e) => {
         if (e.target.files) {
-            setImgFile(e.target.files[0])
+            console.log('e.target.files: ', e.target.files)
+            setImgFiles(e.target.files)
         } else {
             setFormData((prevState) => ({
                 ...prevState,
