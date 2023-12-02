@@ -47,7 +47,7 @@ function Navbar() {
 
     const handleTitleClick = () => {
         console.log('getAccessTokenFromContext: ', getAccessTokenFromContext())
-        if (getAccessTokenFromContext() === 'null') {
+        if (getAccessTokenFromContext() === null) {
             navigate('/explore')
         } else {
             navigate('/')

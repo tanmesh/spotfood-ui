@@ -166,13 +166,17 @@ function Explore() {
         setLoading(true)
         // enableLocation()
 
-        setProfileForContext(null)
+        console.log('accessToken: ', getAccessTokenFromContext())
+        if (getAccessTokenFromContext() === null) {
+            console.log('accessToken is null')
+        } else {
+            setProfileForContext(null)
+            fetchProfile()
+        }
 
         if (tagFilterActive === false && rangeFilterActive === false) {
             fetchFeed()
         }
-
-        fetchProfile()
 
         setLoading(false)
     }, [])

@@ -22,7 +22,7 @@ function CreatePost() {
         setLoading(true)
 
         console.log('accessToken: ', getAccessTokenFromContext())
-        if (getAccessTokenFromContext() === 'null') {
+        if (getAccessTokenFromContext() === null) {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;

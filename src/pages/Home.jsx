@@ -146,7 +146,7 @@ function Home() {
     const fetchFeed = async () => {
         try {
             console.log('accessToken: ', getAccessTokenFromContext())
-            if (getAccessTokenFromContext() === 'null') {
+            if (getAccessTokenFromContext() === null) {
                 console.log('accessToken is null')
                 navigate('/sign-in')
                 return;
@@ -233,7 +233,7 @@ function Home() {
         setProfileForContext(null)
 
         console.log('accessToken: ', getAccessTokenFromContext())
-        if (getAccessTokenFromContext() === 'null') {
+        if (getAccessTokenFromContext() === null) {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
