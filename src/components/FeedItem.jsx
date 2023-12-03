@@ -157,7 +157,11 @@ function FeedItem({ post }) {
                 className='card text-center'>
                 <Card.Header className='p-0 m-0'>
                     {Array.isArray(post.imgUrl) ? (
-                        <Carousel interval={null} style={{ backgroundColor: 'black' }}>
+                        <Carousel
+                            interval={null} style={{ backgroundColor: 'black' }}
+                            indicators={post.imgUrl.length === 1 ? false : true}
+                            nextIcon={post.imgUrl.length !== 1 ? undefined : null}
+                            prevIcon={post.imgUrl.length !== 1 ? undefined : null} >
                             {post.imgUrl.map((url, index) => (
                                 <Carousel.Item key={index}>
                                     <div style={{ width: '100%', height: isMobile() ? '300px' : '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
