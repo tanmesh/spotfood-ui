@@ -165,15 +165,9 @@ function Explore() {
         setUserExploreForContext([])
         setLoading(true)
         // enableLocation()
-
-        console.log('accessToken: ', getAccessTokenFromContext())
-        if (getAccessTokenFromContext() === null) {
-            console.log('accessToken is null')
-        } else {
-            setProfileForContext(null)
-            fetchProfile()
-        }
-
+        
+        setProfileForContext(null)
+        fetchProfile()
         if (tagFilterActive === false && rangeFilterActive === false) {
             fetchFeed()
         }
