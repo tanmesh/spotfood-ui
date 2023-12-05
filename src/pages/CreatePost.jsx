@@ -1,22 +1,32 @@
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { TagsInput } from "react-tag-input-component";
 import axios from 'axios'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import UserContext from '../context/user/UserContext';
+import TagContext from '../context/tag/TagContext';
 import AWS from 'aws-sdk';
 import Loading from '../shared/Loading';
 import React, { useState, useContext, useEffect } from 'react'
+import Select from 'react-select'
+import makeAnimated from 'react-select/animated';
+import CreatableSelect from 'react-select/creatable';
 
 function CreatePost() {
     const { getAccessTokenFromContext } = useContext(UserContext);
+    const { setTagsForContext, getTagsFromContext } = useContext(TagContext);
+
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
     const [address, setAddress] = useState('')
     const [imgFiles, setImgFiles] = useState([])
     const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedResturant, setSelectedResturant] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [restaurants, setRestaurants] = useState([])
+
     const navigate = useNavigate()
+    const animatedComponents = makeAnimated();
 
     useEffect(() => {
         setLoading(true)
@@ -27,6 +37,8 @@ function CreatePost() {
             navigate('/sign-in')
             return;
         }
+
+        fetchTags()
 
         // // use current location
         // const options = {
@@ -56,6 +68,25 @@ function CreatePost() {
         imgUrl: '',
         locationName: '',
     })
+
+    const fetchTags = async () => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+
+        await axios.get(`${process.env.REACT_APP_API_URL}/tag/get_all`, config)
+            .then((response) => {
+                console.log('response.data: ', response.data)
+                setTagsForContext(response.data)
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
 
     // Upload to S3 bucket
     const uploadFile = async (imgFile) => {
@@ -164,11 +195,16 @@ function CreatePost() {
         console.log('geolocation_: ', geolocation_)
         console.log('imgUrlList: ', imgUrlList)
 
+        let tags = []
+        selectedTags.map((tag) => {
+            tags.push(tag.value)
+        })
         const formDataCopy = {
             ...formData,
+            locationName: restaurants[0].value,
             latitude: geolocation_.latitude,
             longitude: geolocation_.longitude,
-            tagList: selectedTags,
+            tagList: tags,
             imgUrl: imgUrlList,
         }
 
@@ -216,6 +252,31 @@ function CreatePost() {
         }
     }
 
+    const extractRestaurants = async () => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getAccessTokenFromContext(),
+            },
+        };
+
+        axios.post(`${process.env.REACT_APP_API_URL}/restaurant/getNearby`, { address: address }, config)
+            .then((response) => {
+                console.log(response.data);
+
+                let restaurants_ = []
+                response.data.map((restaurant) => {
+                    restaurants_.push({ value: restaurant, label: restaurant })
+                })
+                setRestaurants(restaurants_)
+                console.log('restaurants_: ', restaurants_)
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                toast.error('An unexpected error occurred. Please try again.');
+            });
+    }
+
     return (
         <>
             <main className='profile'>
@@ -224,27 +285,6 @@ function CreatePost() {
                 <h3>Create new post</h3>
                 <div className="profileInfo">
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="locationName">
-                            <Form.Label>Restaurant name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter restaurant name"
-                                onChange={onMutate}
-                                required
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="tags">
-                            <Form.Label>Tags</Form.Label>
-                            <TagsInput
-                                value={selectedTags}
-                                onChange={setSelectedTags}
-                                name="tags"
-                                placeHolder="Enter tag"
-                                required
-                            />
-                        </Form.Group>
-
                         {!geolocationEnabled &&
                             (
                                 <Form.Group className="mb-3" controlId="address">
@@ -255,8 +295,46 @@ function CreatePost() {
                                         onChange={(e) => setAddress(e.target.value)}
                                         required
                                     />
+
+                                    <div className="mt-3 d-flex justify-content-center">
+                                        <Button variant="btn btn-outline-dark"
+                                            onClick={extractRestaurants}>
+                                            Extract nearby restaurants
+                                        </Button>
+                                    </div>
                                 </Form.Group>
                             )}
+
+                        <Form.Group className="mb-3" controlId="locationName">
+                            <Form.Label>Restaurant name</Form.Label>
+                            <CreatableSelect
+                                isClearable
+                                options={restaurants}
+                                defaultValue={''}
+                                value={selectedResturant}
+                                onChange={setSelectedResturant}
+                                required
+                            />
+                            {/* <Form.Control
+                                type="text"
+                                placeholder="Enter restaurant name"
+                                onChange={onMutate}
+                                required
+                            /> */}
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="tags">
+                            <Form.Label>Tags</Form.Label>
+                            <Select
+                                closeMenuOnSelect={true}
+                                options={getTagsFromContext()}
+                                value={selectedTags}
+                                onChange={setSelectedTags}
+                                components={animatedComponents}
+                                isMulti  
+                                required
+                            />
+                        </Form.Group>
 
                         <Form.Group controlId="encodedImgString" className="mb-3">
                             <Form.Label>Upload </Form.Label>

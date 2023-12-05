@@ -173,9 +173,6 @@ function Home() {
                 .catch((error) => {
                     setLoading(false)
                     console.error("Error:", error);
-                    if (setUserFeedForContext().length === 0) {
-                        return;
-                    }
                     toast.error('An unexpected error occurred. Please try again.');
                     return;
                 });
@@ -237,17 +234,18 @@ function Home() {
             console.log('accessToken is null')
             navigate('/sign-in')
             return;
+        } else {
+
+            // enableLocation()
+
+            if (tagFilterActive === false && rangeFilterActive === false) {
+                fetchFeed()
+            }
+
+            fetchProfile()
+
+            setLoading(false)
         }
-
-        // enableLocation()
-
-        if (tagFilterActive === false && rangeFilterActive === false) {
-            fetchFeed()
-        }
-
-        fetchProfile()
-
-        setLoading(false)
         // eslint-disable-next-line
     }, [])
 
