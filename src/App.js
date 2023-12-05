@@ -12,12 +12,18 @@ import Home from "./pages/Home.jsx";
 import Profile from "./pages/Profile.jsx";
 import Explore from "./pages/Explore.jsx";
 import Footer from "./components/Footer.jsx";
-import React from "react";
+import React, {useEffect} from "react";
 import MyPost from './pages/MyPost.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Navbar from './components/Navbar.jsx';
+import { GlobalDebug } from './remove-consoles.js';
 
 function App() {
+  useEffect(() => {
+    (process.env.REACT_APP_ENV === "production") &&
+      GlobalDebug(false);
+  }, []);
+
   return (
     <UserPostsProvider>
       <UserProvider>
