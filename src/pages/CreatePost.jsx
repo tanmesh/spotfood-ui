@@ -20,7 +20,7 @@ function CreatePost() {
     const [address, setAddress] = useState('')
     const [imgFiles, setImgFiles] = useState([])
     const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedResturant, setSelectedResturant] = useState('');
+    const [selectedResturant, setSelectedResturant] = useState({});
     const [loading, setLoading] = useState(false);
 
     const [restaurants, setRestaurants] = useState([])
@@ -66,7 +66,7 @@ function CreatePost() {
         latitude: '',
         longitude: '',
         imgUrl: '',
-        locationName: '',
+        restaurantName: '',
     })
 
     const fetchTags = async () => {
@@ -201,7 +201,8 @@ function CreatePost() {
         })
         const formDataCopy = {
             ...formData,
-            locationName: restaurants[0].value,
+            restaurantName: selectedResturant.label,
+            restaurantId: selectedResturant.value,
             latitude: geolocation_.latitude,
             longitude: geolocation_.longitude,
             tagList: tags,
@@ -266,7 +267,7 @@ function CreatePost() {
 
                 let restaurants_ = []
                 response.data.map((restaurant) => {
-                    restaurants_.push({ value: restaurant, label: restaurant })
+                    restaurants_.push({ value: restaurant.id, label: restaurant.name })
                 })
                 setRestaurants(restaurants_)
                 console.log('restaurants_: ', restaurants_)
@@ -305,7 +306,7 @@ function CreatePost() {
                                 </Form.Group>
                             )}
 
-                        <Form.Group className="mb-3" controlId="locationName">
+                        <Form.Group className="mb-3" controlId="restaurantName">
                             <Form.Label>Restaurant name</Form.Label>
                             <CreatableSelect
                                 isClearable

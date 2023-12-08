@@ -14,6 +14,8 @@ export const UserPostsProvider = ({ children }) => {
         tagList: [],
         nickName: '',
         password: '',
+        restaurantName: '',
+        restaurantId: ''
     })
 
     const setProfileForContext = (profile) => {

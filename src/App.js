@@ -12,11 +12,12 @@ import Home from "./pages/Home.jsx";
 import Profile from "./pages/Profile.jsx";
 import Explore from "./pages/Explore.jsx";
 import Footer from "./components/Footer.jsx";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import MyPost from './pages/MyPost.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Navbar from './components/Navbar.jsx';
 import { GlobalDebug } from './remove-consoles.js';
+import Restaurant from './pages/Restaurant.jsx';
 
 function App() {
   useEffect(() => {
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/add-post" element={<CreatePost />} exact />
                 <Route path="/explore" element={<Explore />} exact />
                 <Route path='/my-posts' element={<MyPost />} exact />
+                <Route path='/restaurant/:restaurantId' element={<Restaurant />} exact />
                 <Route path='/*' element={<NotFound />} exact />
               </Routes>
             </div>

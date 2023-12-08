@@ -204,7 +204,7 @@ function FeedItem({ post }) {
                     <div className="cardBodyDiv m-0">
                         <div>
                             <p className="m-0">
-                                <strong>Restaurant:</strong> {post.locationName}
+                                <strong>Restaurant:</strong> <a onClick={() => navigate(`/restaurant/${post.restaurantId}`)}>{post.restaurantName}</a>
                             </p>
                         </div>
                         {post.distance >= 1 && (
